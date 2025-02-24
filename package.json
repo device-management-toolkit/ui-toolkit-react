@@ -51,7 +51,7 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@types/ws": "^8.2.0",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^6.11.0",
     "canvas": "^2.10.2",
     "css-loader": "^7.1.1",
