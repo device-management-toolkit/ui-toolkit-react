@@ -22,8 +22,8 @@
   "homepage": "https://github.com/device-management-toolkit/ui-toolkit-react#readme",
   "types": "index.d.ts",
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -48,7 +48,7 @@
     "@types/jest": "^29.2.3",
     "@types/md5": "^2.3.2",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.0.25",
+    "@types/react": "^19.0.1",
     "@types/react-dom": "^18.0.9",
     "@types/ws": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
@@ -68,8 +68,8 @@
     "jest-environment-jsdom": "^29.3.1",
     "jest-junit": "^16.0.0",
     "jest-transform-stub": "^2.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "sass-loader": "^16.0.0",
     "source-map-loader": "^5.0.0",
     "style-loader": "^4.0.0",
