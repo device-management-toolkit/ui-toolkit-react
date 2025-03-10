@@ -17,9 +17,9 @@
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/open-amt-cloud-toolkit/ui-toolkit-react/issues"
+    "url": "https://github.com/device-management-toolkit/ui-toolkit-react/issues"
   },
-  "homepage": "https://github.com/open-amt-cloud-toolkit/ui-toolkit-react#readme",
+  "homepage": "https://github.com/device-management-toolkit/ui-toolkit-react#readme",
   "types": "index.d.ts",
   "peerDependencies": {
     "react": "^18.2.0",

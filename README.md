@@ -1,9 +1,9 @@
 # UI Toolkit React
 
-![CodeQL](https://img.shields.io/github/actions/workflow/status/open-amt-cloud-toolkit/ui-toolkit-react/codeql-analysis.yml?style=for-the-badge&label=CodeQL&logo=github)
-![Build](https://img.shields.io/github/actions/workflow/status/open-amt-cloud-toolkit/ui-toolkit-react/ci.yml?style=for-the-badge&logo=github)
-![Codecov](https://img.shields.io/codecov/c/github/open-amt-cloud-toolkit/ui-toolkit-react?style=for-the-badge&logo=codecov)
-[![OSSF-Scorecard Score](https://img.shields.io/ossf-scorecard/github.com/open-amt-cloud-toolkit/ui-toolkit-react?style=for-the-badge&label=OSSF%20Score)](https://api.securityscorecards.dev/projects/github.com/open-amt-cloud-toolkit/ui-toolkir-react)
+![CodeQL](https://img.shields.io/github/actions/workflow/status/device-management-toolkit/ui-toolkit-react/codeql-analysis.yml?style=for-the-badge&label=CodeQL&logo=github)
+![Build](https://img.shields.io/github/actions/workflow/status/device-management-toolkit/ui-toolkit-react/ci.yml?style=for-the-badge&logo=github)
+![Codecov](https://img.shields.io/codecov/c/github/device-management-toolkit/ui-toolkit-react?style=for-the-badge&logo=codecov)
+[![OSSF-Scorecard Score](https://img.shields.io/ossf-scorecard/github.com/device-management-toolkit/ui-toolkit-react?style=for-the-badge&label=OSSF%20Score)](https://api.securityscorecards.dev/projects/github.com/open-amt-cloud-toolkit/ui-toolkir-react)
 [![Discord](https://img.shields.io/discord/1063200098680582154?style=for-the-badge&label=Discord&logo=discord&logoColor=white&labelColor=%235865F2&link=https%3A%2F%2Fdiscord.gg%2FDKHeUNEWVH)](https://discord.gg/DKHeUNEWVH)
 
 
@@ -13,7 +13,7 @@ The UI Toolkit provides prebuilt, React-based components for integrating remote 
 
 <br><br>
 
-**For detailed documentation** about [Getting Started with the UI Toolkit](https://open-amt-cloud-toolkit.github.io/docs/2.0/Tutorials/uitoolkit) or other features of the Open AMT Cloud Toolkit, see the [docs](https://open-amt-cloud-toolkit.github.io/docs/).
+**For detailed documentation** about [Getting Started with the UI Toolkit](https://device-management-toolkit.github.io/docs/2.0/Tutorials/uitoolkit) or other features of the Device Management Toolkit, see the [docs](https://device-management-toolkit.github.io/docs/).
 
 <br>
 
@@ -66,11 +66,11 @@ The React app can be created in any preferred development directory. The MPS can
 
 ## Additional Resources
 
-- For detailed documentation and Getting Started, [visit the docs site](https://open-amt-cloud-toolkit.github.io/docs).
+- For detailed documentation and Getting Started, [visit the docs site](https://device-management-toolkit.github.io/docs).
 
 - Looking to contribute? [Find more information here about contribution guidelines and practices](.\CONTRIBUTING.md).
 
-- Find a bug? Or have ideas for new features? [Open a new Issue](https://github.com/open-amt-cloud-toolkit/ui-toolkit-react/issues).
+- Find a bug? Or have ideas for new features? [Open a new Issue](https://github.com/device-management-toolkit/ui-toolkit-react/issues).
 
 - Need additional support or want to get the latest news and events about Open AMT? Connect with the team directly through Discord.
 
