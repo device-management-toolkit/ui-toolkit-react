@@ -7,7 +7,7 @@ import React from 'react'
 import { KVM, KVMProps } from '../reactjs/KVM/UI'
 import { render } from '@testing-library/react'
 import resetAllMocks = jest.resetAllMocks
-import { act } from 'react-dom/test-utils'
+import { act } from 'react'
 
 let props: KVMProps
 beforeEach(() => {

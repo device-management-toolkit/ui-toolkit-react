@@ -22,8 +22,8 @@
   "homepage": "https://github.com/device-management-toolkit/ui-toolkit-react#readme",
   "types": "index.d.ts",
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
