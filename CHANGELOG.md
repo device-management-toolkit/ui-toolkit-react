@@ -1,3 +1,13 @@
+# [4.0.0](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v3.2.9...v4.0.0) (2025-03-11)
+
+
+* build(deps)!: upgrade to react 19 (#1608) ([cd061f3](https://github.com/device-management-toolkit/ui-toolkit-react/commit/cd061f3e0cdcfbfcb4eaefa4420c8deeaac564cf)), closes [#1608](https://github.com/device-management-toolkit/ui-toolkit-react/issues/1608)
+
+
+### BREAKING CHANGES
+
+* upgrade to react 19
+
 ## [3.2.9](https://github.com/open-amt-cloud-toolkit/ui-toolkit-react/compare/v3.2.8...v3.2.9) (2024-11-08)
 
 ## [3.2.8](https://github.com/open-amt-cloud-toolkit/ui-toolkit-react/compare/v3.2.7...v3.2.8) (2024-08-12)
