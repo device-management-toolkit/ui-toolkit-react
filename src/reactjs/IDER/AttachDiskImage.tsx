@@ -3,52 +3,56 @@
 * SPDX-License-Identifier: Apache-2.0
 **********************************************************************/
 
-import React from 'react'
+import React, { useState } from 'react'
 import { IDER } from './ider'
 
-export class AttachDiskImage extends React.Component<{
+interface AttachDiskImageProps {
   deviceId: string | null
   mpsServer: string | null
   authToken?: string
-}, { selectedFile: File | null,  iderState: number }> {
+}
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      selectedFile: null,
-      iderState: 0, // State to track the IDER state
-    }
-  }
+export const AttachDiskImage = ({ 
+  deviceId, 
+  mpsServer, 
+  authToken 
+}: AttachDiskImageProps): React.ReactElement => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [iderState, setIderState] = useState(0)
 
-  handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null
-    this.setState({ selectedFile: file })
+    setSelectedFile(file)
   }
 
-  updateIderState = (newState) => {
-    this.setState({ iderState: newState })
+  const updateIderState = (newState: number) => {
+    setIderState(newState)
   }
 
-  render() {
-    return (
-      <div>
-        <IDER
-          iderState={this.state.iderState}
-          updateIderState={this.updateIderState}
-          deviceId={this.props.deviceId}
-          mpsServer={this.props.mpsServer}
-          authToken={this.props.authToken}
-          cdrom={this.state.selectedFile}
-          floppy={null}
-          data-testid="ider-component" iderData={null}        />
-        <input data-testid="file-input" type="file" onChange={this.handleFileChange} />
-        <button 
-          onClick={() => this.state.iderState === 0 ? this.updateIderState(1) : this.updateIderState(0)}
-          disabled={!this.state.selectedFile}
-        >
-          {this.state.iderState === 0 ? 'Start IDER' : 'Stop IDER'}
-        </button>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <IDER
+        iderState={iderState}
+        updateIderState={updateIderState}
+        deviceId={deviceId}
+        mpsServer={mpsServer}
+        authToken={authToken}
+        cdrom={selectedFile}
+        floppy={null}
+        data-testid="ider-component" 
+        iderData={null}
+      />
+      <input 
+        data-testid="file-input" 
+        type="file" 
+        onChange={handleFileChange} 
+      />
+      <button 
+        onClick={() => iderState === 0 ? updateIderState(1) : updateIderState(0)}
+        disabled={!selectedFile}
+      >
+        {iderState === 0 ? 'Start IDER' : 'Stop IDER'}
+      </button>
+    </div>
+  )
 }

@@ -3,7 +3,7 @@
 * SPDX-License-Identifier: Apache-2.0
 **********************************************************************/
 
-import React from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { AmtTerminal, AMTRedirector, Protocol, TerminalDataProcessor, RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
 import Style from 'styled-components'
 import { Terminal } from '@xterm/xterm'
@@ -12,15 +12,15 @@ import '@xterm/xterm/css/xterm.css'
 import './sol.scss'
 
 const StyledDiv = Style.div`
-display : inline-block;
-padding : 0px 5px;
+  display: inline-block;
+  padding: 0px 5px;
 `
 
 const HeaderStrip = Style.div`
-background-color: darkgray;
-padding: 5px;
-font-size: 13px;
-text-align: center;
+  background-color: darkgray;
+  padding: 5px;
+  font-size: 13px;
+  text-align: center;
 `
 
 export interface SOLProps {
@@ -30,47 +30,33 @@ export interface SOLProps {
   authToken: string
 }
 
-export interface SOLStates {
-  isConnected: boolean
-  SOLstate: number
-  powerState: number
-  showSuccess: boolean
-  message: string
-  isSelected: boolean
-  type: string
-  solNotEnabled: string
-  deviceOnSleep: string
-  isPowerStateLoaded: boolean
-}
+export const Sol = ({
+  deviceId,
+  mpsServer,
+  autoConnect,
+  authToken
+}: SOLProps): React.ReactElement => {
+  const [isConnected, setIsConnected] = useState(false)
+  const [SOLstate, setSOLstate] = useState(0)
+  const [powerState, setPowerState] = useState(0)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [message, setMessage] = useState('')
+  const [isSelected, setIsSelected] = useState(true)
+  const [type, setType] = useState('')
+  const [solNotEnabled, setSolNotEnabled] = useState('')
+  const [deviceOnSleep, setDeviceOnSleep] = useState('')
+  const [isPowerStateLoaded, setIsPowerStateLoaded] = useState(false)
+  
+  const redirectorRef = useRef<any>(null)
+  const terminalRef = useRef<any>(null)
+  const loggerRef = useRef<any>(null)
+  const dataProcessorRef = useRef<any>(null)
+  const callbackRef = useRef<any>(null)
+  const termRef = useRef<any>(null)
 
-/** container class for SOL */
-export class Sol extends React.Component<SOLProps, SOLStates> {
-  redirector: any
-  terminal: any
-  logger: any
-  dataProcessor: any
-  callback: any
-  term: any
-  fr: FileReader
-  constructor (props: SOLProps) {
-    super(props)
-    this.state = {
-      isConnected: false,
-      SOLstate: 0,
-      powerState: 0,
-      showSuccess: false,
-      message: '',
-      isSelected: true,
-      type: '',
-      solNotEnabled: '',
-      deviceOnSleep: '',
-      isPowerStateLoaded: false
-    }
-  }
-
-  init = (): void => {
-    const server: string = this.props.mpsServer != null ? this.props.mpsServer.replace('http', 'ws') : ''
-    const deviceUuid: string = this.props.deviceId != null ? this.props.deviceId : ''
+  const init = useCallback(() => {
+    const server: string = mpsServer != null ? mpsServer.replace('http', 'ws') : ''
+    const deviceUuid: string = deviceId != null ? deviceId : ''
     const config: RedirectorConfig = {
       mode: 'sol',
       protocol: Protocol.SOL,
@@ -81,92 +67,119 @@ export class Sol extends React.Component<SOLProps, SOLStates> {
       pass: '',
       tls: 0,
       tls1only: 0,
-      authToken:  this.props.authToken,
+      authToken: authToken,
       server: `${server}/relay`
     }
-    this.terminal = new AmtTerminal()
-    this.redirector = new AMTRedirector(config)
-    this.dataProcessor = new TerminalDataProcessor(this.terminal)
-    this.terminal.onSend = this.redirector.send.bind(this.redirector)
-    this.redirector.onNewState = this.terminal.StateChange.bind(this.terminal)
-    this.redirector.onStateChanged = this.onTerminalStateChange.bind(this)
-    this.redirector.onProcessData = this.dataProcessor.processData.bind(this.dataProcessor)
-    this.dataProcessor.processDataToXterm = this.handleWriteToXterm.bind(this)
-    this.dataProcessor.clearTerminal = this.handleClearTerminal.bind(this)
-    this.term = new Terminal({
+    
+    terminalRef.current = new AmtTerminal()
+    redirectorRef.current = new AMTRedirector(config)
+    dataProcessorRef.current = new TerminalDataProcessor(terminalRef.current)
+    
+    if (terminalRef.current && redirectorRef.current && dataProcessorRef.current) {
+      terminalRef.current.onSend = redirectorRef.current.send.bind(redirectorRef.current)
+      redirectorRef.current.onNewState = terminalRef.current.StateChange.bind(terminalRef.current)
+      redirectorRef.current.onStateChanged = onTerminalStateChange
+      redirectorRef.current.onProcessData = dataProcessorRef.current.processData.bind(dataProcessorRef.current)
+      dataProcessorRef.current.processDataToXterm = handleWriteToXterm
+      dataProcessorRef.current.clearTerminal = handleClearTerminal
+    }
+    
+    termRef.current = new Terminal({
       cursorStyle: 'block',
       fontWeight: 'bold',
       rows: 30,
       cols: 100
     })
-  }
+  }, [mpsServer, deviceId, authToken])
 
-  cleanUp = (): void => {
-    this.terminal = null
-    this.redirector = null
-    this.dataProcessor = null
-    this.term = null
-  }
+  const cleanUp = useCallback(() => {
+    terminalRef.current = null
+    redirectorRef.current = null
+    dataProcessorRef.current = null
+    termRef.current = null
+  }, [])
 
-  componentDidMount (): void {
-    this.init()
-  }
-
-  /** write the processed data from webscoket in to xterm */
-
-  handleWriteToXterm = (str): any => this.term.write(str)
-
-  handleClearTerminal = (): any => this.term.reset()
-
-  /** capture the data on xterm key press */
-  handleKeyPress = (domEvent): any => this.terminal.TermSendKeys(domEvent)
-
-  handleKeyDownPress = (domEvent): any => this.terminal.handleKeyDownEvents(domEvent)
-
-  startSOL = (): void => {
-    if (typeof this.redirector !== 'undefined') {
-      this.redirector.start(WebSocket)
+  // Initialize on mount
+  useEffect(() => {
+    init()
+    
+    // Cleanup on unmount
+    return () => {
+      cleanUp()
     }
-  }
+  }, [init, cleanUp])
 
-  stopSOL = (): void => {
-    if (typeof this.redirector !== 'undefined') {
-      this.redirector.stop()
+  const handleWriteToXterm = useCallback((str: string) => {
+    if (termRef.current) {
+      termRef.current.write(str)
     }
-    this.handleClearTerminal()
-    this.cleanUp()
-    this.init()
-  }
+  }, [])
 
-  handleSOLConnect = (e): void => {
-    e.persist()
-    if (this.state.SOLstate === 0) {
-      this.startSOL()
+  const handleClearTerminal = useCallback(() => {
+    if (termRef.current) {
+      termRef.current.reset()
+    }
+  }, [])
+
+  const handleKeyPress = useCallback((domEvent: any) => {
+    if (terminalRef.current) {
+      terminalRef.current.TermSendKeys(domEvent)
+    }
+  }, [])
+
+  const handleKeyDownPress = useCallback((domEvent: any) => {
+    if (terminalRef.current) {
+      terminalRef.current.handleKeyDownEvents(domEvent)
+    }
+  }, [])
+
+  const startSOL = useCallback(() => {
+    if (redirectorRef.current) {
+      redirectorRef.current.start(WebSocket)
+    }
+  }, [])
+
+  const stopSOL = useCallback(() => {
+    if (redirectorRef.current) {
+      redirectorRef.current.stop()
+    }
+    handleClearTerminal()
+    cleanUp()
+    init()
+  }, [cleanUp, init, handleClearTerminal])
+
+  const handleSOLConnect = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (SOLstate === 0) {
+      startSOL()
     } else {
-      this.stopSOL()
+      stopSOL()
     }
-  }
+  }, [SOLstate, startSOL, stopSOL])
 
-  onTerminalStateChange = (redirector, state: number): void => this.setState({ SOLstate: state })
+  const onTerminalStateChange = useCallback((redirector: any, state: number) => {
+    setSOLstate(state)
+  }, [])
 
-  /** callback functions from child components to update the state values */
-  handleFeatureStatus = (value): void => {
-    this.setState({
-      solNotEnabled: value
-    })
-  }
+  const handleFeatureStatus = useCallback((value: string) => {
+    setSolNotEnabled(value)
+  }, [])
 
-  getSOLState = (): any => this.state.SOLstate === 3 ? 2 : 0
+  const getSOLState = useCallback(() => {
+    return SOLstate === 3 ? 2 : 0
+  }, [SOLstate])
 
-  render (): React.ReactNode {
-    const { SOLstate } = this.state
-    return (
-      <React.Fragment>
-        <button onClick={this.handleSOLConnect}>{SOLstate === 3 ? 'Disconnect' : 'Connect'}</button>
-        {SOLstate === 3 && this.term && <Term handleKeyPress={this.handleKeyPress} handleKeyDownPress={this.handleKeyDownPress} xterm={this.term} />}
-      </React.Fragment>
-    )
-  }
+  return (
+    <>
+      <button onClick={handleSOLConnect}>
+        {SOLstate === 3 ? 'Disconnect' : 'Connect'}
+      </button>
+      {SOLstate === 3 && termRef.current && (
+        <Term 
+          handleKeyPress={handleKeyPress} 
+          handleKeyDownPress={handleKeyDownPress} 
+          xterm={termRef.current} 
+        />
+      )}
+    </>
+  )
 }
-
-

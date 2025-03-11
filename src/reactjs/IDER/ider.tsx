@@ -3,7 +3,7 @@
 * SPDX-License-Identifier: Apache-2.0
 **********************************************************************/
 import { AMTRedirector, Protocol, AMTIDER, RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
-import React from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
 export interface IDERProps {
     iderState: number
@@ -14,11 +14,7 @@ export interface IDERProps {
     mpsServer: string | null
     authToken?: string
     deviceId: string | null
-}
-
-export interface IDERState {
-    iderState: number
-    iderData: IDERData | null
+    'data-testid'?: string
 }
 
 export interface IDERData {
@@ -28,98 +24,98 @@ export interface IDERData {
     cdromWrite: number
 }
 
-export class IDER extends React.Component<IDERProps, IDERState> {
-    redirector: AMTRedirector | null = null
-    ider: AMTIDER | null = null
+export const IDER = ({
+    iderState,
+    updateIderState,
+    cdrom,
+    floppy,
+    mpsServer,
+    authToken,
+    deviceId
+}: IDERProps): React.ReactElement | null => {
+    const [currentIderState, setCurrentIderState] = useState(0)
+    const redirectorRef = useRef<AMTRedirector | null>(null)
+    const iderRef = useRef<AMTIDER | null>(null)
 
-    constructor(props: IDERProps) {
-        super(props)
-        this.state = {
-            iderState: 0,
-            iderData: null,
-        }
-    }
-
-    componentDidMount(): void {
-        const server: string = this.props.mpsServer != null ? this.props.mpsServer.replace('http', 'ws') : ''
+    useEffect(() => {
+        // Initialize the redirector on mount
+        const server: string = mpsServer != null ? mpsServer.replace('http', 'ws') : ''
         const config: RedirectorConfig = {
             mode: 'ider',
             protocol: Protocol.IDER,
             fr: new FileReader(),
-            host: this.props.deviceId != null ? this.props.deviceId : '',
+            host: deviceId != null ? deviceId : '',
             port: 16994,
             user: '',
             pass: '',
             tls: 0,
             tls1only: 0,
-            authToken: this.props.authToken != null ? this.props.authToken : '',
+            authToken: authToken != null ? authToken : '',
             server: server
         }
-        this.redirector = new AMTRedirector(config)
+        redirectorRef.current = new AMTRedirector(config)
+
+        // Cleanup on unmount
+        return () => {
+            cleanup()
+        }
+    }, [mpsServer, deviceId, authToken])
+
+    // React to changes in iderState prop
+    useEffect(() => {
+        if (iderState === 1 && currentIderState === 0) {
+            startIder()
+        } else if (iderState === 0 && currentIderState === 1) {
+            stopIder()
+        }
+    }, [iderState])
+
+    const onConnectionStateChange = (redirector: AMTRedirector, state: number): void => {
+        setCurrentIderState(state)
     }
 
-    componentWillUnmount(): void {
-        this.cleanup()
-    }
-
-    onConnectionStateChange = (redirector, state: number): void => this.setState({ iderState: state })
-
-    componentDidUpdate(prevProps) {
-        // React to changes in props, specifically iderState
-        if (this.props.iderState !== prevProps.iderState) {
-            if (this.props.iderState === 1) {
-              this.startIder()
-            } else {
-              this.stopIder()
-            }
-          }
-    }
-
-    startIder = (): void => {
-        this.props.updateIderState(1)
-        if (this.redirector) {
-            this.ider = new AMTIDER(this.redirector, this.props.cdrom, null)
-            this.redirector.onNewState = this.ider.stateChange.bind(this.ider)
-            this.redirector.onProcessData = this.ider.processData.bind(this.ider)
-            this.ider.sectorStats = this.iderSectorStats.bind(this)
-            this.redirector.onStateChanged = this.onConnectionStateChange.bind(this)
-            this.redirector.start(WebSocket)
+    const startIder = (): void => {
+        updateIderState(1)
+        if (redirectorRef.current) {
+            iderRef.current = new AMTIDER(redirectorRef.current, cdrom, null)
+            redirectorRef.current.onNewState = iderRef.current.stateChange.bind(iderRef.current)
+            redirectorRef.current.onProcessData = iderRef.current.processData.bind(iderRef.current)
+            iderRef.current.sectorStats = iderSectorStats
+            redirectorRef.current.onStateChanged = onConnectionStateChange
+            redirectorRef.current.start(WebSocket)
         }
     }
 
-    stopIder(): void {
-        this.props.updateIderState(0)
-        if (this.redirector) {
-            this.redirector.stop()
-            this.cleanup()
+    const stopIder = (): void => {
+        updateIderState(0)
+        if (redirectorRef.current) {
+            redirectorRef.current.stop()
+            cleanup()
         }
     }
 
-    cleanup(): void {
-        this.redirector = null
-        this.ider = null
+    const cleanup = (): void => {
+        redirectorRef.current = null
+        iderRef.current = null
     }
 
-    iderSectorStats(mode, dev, total, start, len): void {
-        if (!this.ider) return
+    const iderSectorStats = (mode: number, dev: number, total: number, start: number, len: number): void => {
+        if (!iderRef.current) return
         if (mode === 1) { // Read operation
             if (dev === 0) { // Floppy
-                this.ider.floppyRead += len * 512;
+                iderRef.current.floppyRead += len * 512
             } else { // CD-ROM
-                this.ider.cdromRead += len * 2048;
+                iderRef.current.cdromRead += len * 2048
             }
         } else { // Write operation
             if (dev === 0) { // Floppy
-                this.ider.floppyWrite += len * 512;
+                iderRef.current.floppyWrite += len * 512
             } else { // CD-ROM
-                this.ider.cdromWrite += len * 2048;
+                iderRef.current.cdromWrite += len * 2048
             }
         }
     }
 
-    render() {
-        return null
-    }
+    // This component doesn't render anything
+    return null
 }
-
-

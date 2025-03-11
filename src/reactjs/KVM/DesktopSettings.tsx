@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 
-import React from 'react'
+import React, { useState } from 'react'
 import { EncodingOptions } from './EncodingOptions'
 
 export interface IDesktopSettings {
@@ -11,24 +11,17 @@ export interface IDesktopSettings {
   getConnectState: () => number
 }
 
-export class DesktopSettings extends React.Component<IDesktopSettings> {
-  desktopsettings = {
+export const DesktopSettings = ({ changeDesktopSettings, getConnectState }: IDesktopSettings): React.ReactElement => {
+  const [desktopSettings] = useState({
     encoding: 1
+  })
+
+  const changeEncoding = (encoding: number): void => {
+    desktopSettings.encoding = encoding
+    changeDesktopSettings(desktopSettings)
   }
 
-  constructor (props: IDesktopSettings) {
-    super(props)
-    this.changeEncoding = this.changeEncoding.bind(this)
-  }
-
-  changeEncoding (encoding: number): void {
-    this.desktopsettings.encoding = encoding
-    this.props.changeDesktopSettings(this.desktopsettings)
-  }
-
-  render (): React.ReactNode {
-    return (
-      <EncodingOptions changeEncoding={this.changeEncoding} getConnectState={this.props.getConnectState}/>
-    )
-  }
+  return (
+    <EncodingOptions changeEncoding={changeEncoding} getConnectState={getConnectState} />
+  )
 }

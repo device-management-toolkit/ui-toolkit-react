@@ -12,26 +12,29 @@ export interface IHeaderProps {
   kvmstate: number
   deviceId: string | null
   server: string | null
-  handleConnectClick: (e: any) => void
+  handleConnectClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   changeDesktopSettings: (settings: any) => void
   getConnectState: () => number
 }
 
-export class Header extends React.Component<IHeaderProps> {
-  render (): JSX.Element {
-    return (
-      <React.Fragment>
-        <div className="header">
-          <ConnectButton
-            handleConnectClick={this.props.handleConnectClick}
-            kvmstate={this.props.kvmstate}
-          />
-          <DesktopSettings
-            changeDesktopSettings={this.props.changeDesktopSettings}
-            getConnectState={this.props.getConnectState}
-          />
-        </div>
-      </React.Fragment>
-    )
-  }
+export const Header = ({ 
+  kvmstate, 
+  handleConnectClick, 
+  changeDesktopSettings, 
+  getConnectState 
+}: IHeaderProps): React.ReactElement => {
+  return (
+    <>
+      <div className="header">
+        <ConnectButton
+          handleConnectClick={handleConnectClick}
+          kvmstate={kvmstate}
+        />
+        <DesktopSettings
+          changeDesktopSettings={changeDesktopSettings}
+          getConnectState={getConnectState}
+        />
+      </div>
+    </>
+  )
 }

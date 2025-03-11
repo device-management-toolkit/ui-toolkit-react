@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 
-import React from 'react'
+import React, { useState } from 'react'
 import './EncodingOptions.scss'
 
 export interface IEncodingOptions {
@@ -11,28 +11,27 @@ export interface IEncodingOptions {
   getConnectState: () => number
 }
 
-export class EncodingOptions extends React.Component<IEncodingOptions, { value: number }> {
-  constructor (props: IEncodingOptions) {
-    super(props)
-    this.state = { value: 1 }
-    this.onEncodingChange = this.onEncodingChange.bind(this)
+export const EncodingOptions = ({ changeEncoding, getConnectState }: IEncodingOptions): React.ReactElement => {
+  const [value, setValue] = useState(1)
+
+  const onEncodingChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const newValue = parseInt(e.target.value)
+    setValue(newValue)
+    changeEncoding(newValue)
   }
 
-  onEncodingChange (e): void {
-    // e.persist();
-    this.setState({ value: e.target.value })
-    this.props.changeEncoding(e.target.value)
-  }
-
-  render (): React.ReactNode {
-    return (
-      <span className="encoding">
-        <label >Encoding:</label>
-        <select value={this.state.value} className= {this.props.getConnectState() === 2 ? 'reldisabled' : ''} onChange={this.onEncodingChange} disabled={this.props.getConnectState() === 2}>
-          <option value="1">RLE 8</option>
-          <option value="2">RLE 16</option>
-        </select>
-      </span>
-    )
-  }
+  return (
+    <span className="encoding">
+      <label>Encoding:</label>
+      <select 
+        value={value} 
+        className={getConnectState() === 2 ? 'reldisabled' : ''} 
+        onChange={onEncodingChange} 
+        disabled={getConnectState() === 2}
+      >
+        <option value="1">RLE 8</option>
+        <option value="2">RLE 16</option>
+      </select>
+    </span>
+  )
 }
