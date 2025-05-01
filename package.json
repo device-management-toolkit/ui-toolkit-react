@@ -31,7 +31,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@open-amt-cloud-toolkit/ui-toolkit": "^3.2.9",
     "@xterm/xterm": "^5.5.0",
-    "i18next": "^24.0.5",
+    "i18next": "^25.0.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "md5": "^2.2.1",
     "moment": "^2.29.4",
