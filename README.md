@@ -9,6 +9,9 @@
 
 > Disclaimer: Production viable releases are tagged and listed under 'Releases'.  All other check-ins should be considered 'in-development' and should not be used in production
 
+> IMPORTANT: For now, we are continuing to publish both @device-management-toolkit/ui-toolkit-react and @open-amt-cloud-toolkit/ui-toolkit-react npm packages to avoid a breaking change. Please update your package.json at your earliest convenience for when we cease to publish @open-amt-cloud-toolkit/ui-toolkit-react. This is in effort to support the renaming of the toolkit.
+
+
 The UI Toolkit provides prebuilt, React-based components for integrating remote management features such as a keyboard, video, mouse (KVM) control into a web-based management console UI. The controls have a reference UI and layout that can be customized further to seamlessly integrate with existing management console solutions.
 
 <br><br>
