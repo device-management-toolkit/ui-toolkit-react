@@ -4,11 +4,11 @@
 **********************************************************************/
 import React from 'react'
 import { IDER } from '../reactjs/IDER/ider'
-import { AMTRedirector } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { AMTRedirector } from '@device-management-toolkit/ui-toolkit/core'
 import { render } from '@testing-library/react'
 
 // Mocks for external dependencies
-jest.mock('@open-amt-cloud-toolkit/ui-toolkit/core', () => ({
+jest.mock('@device-management-toolkit/ui-toolkit/core', () => ({
     AMTRedirector: jest.fn(),
     AMTIDER: jest.fn(),
     Protocol: { IDER: 'IDER' },
