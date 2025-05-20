@@ -4,7 +4,7 @@
  * Author : Ramu Bachala
  **********************************************************************/
 
-import { IDataProcessor, IKvmDataCommunicator, DataProcessor, Desktop, AMTKvmDataRedirector, AMTDesktop, Protocol, MouseHelper, KeyBoardHelper, RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { IDataProcessor, IKvmDataCommunicator, DataProcessor, Desktop, AMTKvmDataRedirector, AMTDesktop, Protocol, MouseHelper, KeyBoardHelper, RedirectorConfig } from '@device-management-toolkit/ui-toolkit/core'
 import { Header } from './Header'
 import { PureCanvas } from './PureCanvas'
 import { isFalsy } from '../shared/Utilities'
