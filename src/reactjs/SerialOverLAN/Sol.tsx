@@ -4,7 +4,7 @@
 **********************************************************************/
 
 import React from 'react'
-import { AmtTerminal, AMTRedirector, Protocol, TerminalDataProcessor, RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { AmtTerminal, AMTRedirector, Protocol, TerminalDataProcessor, RedirectorConfig } from '@device-management-toolkit/ui-toolkit/core'
 import Style from 'styled-components'
 import { Terminal } from '@xterm/xterm'
 import Term from './Terminal'
