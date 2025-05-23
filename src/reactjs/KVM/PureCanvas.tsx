@@ -32,7 +32,18 @@ export class PureCanvas extends React.Component<PureCanvasProps, {}> {
       onMouseMove: this.props.mouseMove
     }
     return (
-      <canvas {...canvasAttributes} data-testid="pure-canvas-testid" className="canvas" ref={(c: any) => isFalsy(c) ? this.props.contextRef(c.getContext('2d')) : null}/>
+      <canvas {...canvasAttributes} data-testid="pure-canvas-testid" className="canvas" ref={(c: any) => {
+        if (isFalsy(c)) {
+          try {
+            const context = c.getContext('2d')
+            if (context) {
+              this.props.contextRef(context)
+            }
+          } catch (error) {
+            console.warn('Canvas context could not be accessed')
+          }
+        }
+      }}/>
     )
   }
 }
