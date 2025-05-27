@@ -35,7 +35,7 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "md5": "^2.2.1",
     "moment": "^2.29.4",
-    "react-i18next": "^15.0.0",
+    "react-i18next": "^15.5.2",
     "sass": "^1.56.1",
     "styled-components": "^6.1.18",
     "winston": "^3.0.0",
