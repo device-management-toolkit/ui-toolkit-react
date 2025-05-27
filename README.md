@@ -46,7 +46,7 @@ The React app can be created in any preferred development directory. The MPS can
 1. Run the following command to add the UI Toolkit and install the required dependencies:
 
     ``` bash
-    npm install @open-amt-cloud-toolkit/ui-toolkit-react
+    npm install @device-management-toolkit/ui-toolkit-react
     ```
 
 2. Run the following commands to start the web UI locally:
