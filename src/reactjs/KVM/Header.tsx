@@ -18,7 +18,7 @@ export interface IHeaderProps {
 }
 
 export class Header extends React.Component<IHeaderProps> {
-  render (): JSX.Element {
+  render ():  React.ReactNode {
     return (
       <React.Fragment>
         <div className="header">
