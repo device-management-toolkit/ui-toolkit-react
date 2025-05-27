@@ -14,11 +14,8 @@
 
 The UI Toolkit provides prebuilt, React-based components for integrating remote management features such as a keyboard, video, mouse (KVM) control into a web-based management console UI. The controls have a reference UI and layout that can be customized further to seamlessly integrate with existing management console solutions.
 
-<br><br>
-
 **For detailed documentation** about [Getting Started with the UI Toolkit](https://device-management-toolkit.github.io/docs/2.0/Tutorials/uitoolkit) or other features of the Device Management Toolkit, see the [docs](https://device-management-toolkit.github.io/docs/).
 
-<br>
 
 ## Prerequisites
 
@@ -65,7 +62,6 @@ The React app can be created in any preferred development directory. The MPS can
     On Your Network: http://172.16.17.4:3000
     ```
 
-<br>
 
 ## Additional Resources
 
@@ -78,8 +74,6 @@ The React app can be created in any preferred development directory. The MPS can
 - Need additional support or want to get the latest news and events about Open AMT? Connect with the team directly through Discord.
 
     [![Discord Banner 1](https://discordapp.com/api/guilds/1063200098680582154/widget.png?style=banner2)](https://discord.gg/DKHeUNEWVH)
-
-<br>
 
 ## License Note
 
