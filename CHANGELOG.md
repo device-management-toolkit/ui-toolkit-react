@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.1...v4.0.2) (2025-05-27)
+
+
+### Bug Fixes
+
+* ensure package is published as public ([4162575](https://github.com/device-management-toolkit/ui-toolkit-react/commit/41625753f573e8157301f1a49ecbc5d2b57dd790))
+
 ## [4.0.1](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.0...v4.0.1) (2025-05-27)
 
 # [4.0.0](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v3.2.9...v4.0.0) (2025-03-11)
