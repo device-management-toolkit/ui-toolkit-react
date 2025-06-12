@@ -76,7 +76,7 @@
     "sass-loader": "^16.0.0",
     "source-map-loader": "^5.0.0",
     "style-loader": "^4.0.0",
-    "ts-jest": "^29.0.3",
+    "ts-jest": "^29.4.0",
     "ts-loader": "^9.4.1",
     "typescript": "^5.0.4",
     "webpack": "^5.75.0",
