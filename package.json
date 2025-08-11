@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
-    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@device-management-toolkit/ui-toolkit": "^3.3.3",
     "@xterm/xterm": "^5.5.0",
