@@ -49,6 +49,9 @@ export class KVM extends React.Component<KVMProps, { kvmstate: number, encodingO
   }
 
   init (): void {
+    if (!this.ctx) {
+      return
+    }
     const deviceUuid: string = this.props.deviceId != null ? this.props.deviceId : ''
     const server: string = this.props.mpsServer != null ? this.props.mpsServer.replace('http', 'ws') : ''
     const config: RedirectorConfig = {
@@ -87,7 +90,9 @@ export class KVM extends React.Component<KVMProps, { kvmstate: number, encodingO
     this.dataProcessor = null
     this.mouseHelper = null
     this.keyboard = null
-    this.ctx.clearRect(0, 0, this.ctx.canvas.height, this.ctx.canvas.width)
+    if (this.ctx) {
+      this.ctx.clearRect(0, 0, this.ctx.canvas.height, this.ctx.canvas.width)
+    }
   }
 
   componentWillUnmount (): void {
