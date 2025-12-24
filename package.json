@@ -35,7 +35,7 @@
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@device-management-toolkit/ui-toolkit": "^3.3.7",
     "@xterm/xterm": "^5.5.0",
-    "i18next": "^25.2.1",
+    "i18next": "^25.7.1",
     "i18next-browser-languagedetector": "^8.0.0",
     "md5": "^2.2.1",
     "moment": "^2.29.4",
