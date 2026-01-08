@@ -1,6 +1,6 @@
 {
   "name": "@open-amt-cloud-toolkit/ui-toolkit-react",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "React UI controls for Intel AMT features",
   "main": "index.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
-    "@device-management-toolkit/ui-toolkit": "^3.3.7",
+    "@device-management-toolkit/ui-toolkit": "^3.3.9",
     "@xterm/xterm": "^5.5.0",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.0.0",
