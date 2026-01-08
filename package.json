@@ -19,6 +19,10 @@
   "bugs": {
     "url": "https://github.com/device-management-toolkit/ui-toolkit-react/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/device-management-toolkit/ui-toolkit-react.git"
+  },
   "homepage": "https://github.com/device-management-toolkit/ui-toolkit-react#readme",
   "types": "index.d.ts",
   "peerDependencies": {
