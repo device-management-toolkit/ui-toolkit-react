@@ -1,0 +1,37 @@
+{
+  "kvm": {
+    "connect": "KVM接続",
+    "connecting": "KVM接続中",
+    "disconnect": "KVM切断",
+    "encoding": "エンコーディング",
+    "encodingOptions": {
+      "rle8": "RLE 8",
+      "rle16": "RLE 16"
+    },
+    "errors": {
+      "connectionFailed": "接続に失敗しました。もう一度お試しください。",
+      "deviceNotFound": "デバイスが見つかりません",
+      "authenticationFailed": "認証に失敗しました"
+    }
+  },
+  "sol": {
+    "connect": "接続",
+    "disconnect": "切断",
+    "connecting": "接続中...",
+    "title": "Serial Over LAN",
+    "errors": {
+      "connectionFailed": "SOL接続に失敗しました。もう一度お試しください。",
+      "notEnabled": "このデバイスではSOLが有効になっていません"
+    }
+  },
+  "ider": {
+    "start": "IDER開始",
+    "stop": "IDER停止",
+    "selectFile": "ISO/IMGファイルを選択",
+    "title": "IDEリダイレクション",
+    "errors": {
+      "connectionFailed": "IDER接続に失敗しました。もう一度お試しください。",
+      "noFileSelected": "ファイルが選択されていません"
+    }
+  }
+}

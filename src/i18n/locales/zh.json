@@ -1,0 +1,37 @@
+{
+  "kvm": {
+    "connect": "连接 KVM",
+    "connecting": "正在连接 KVM",
+    "disconnect": "断开 KVM",
+    "encoding": "编码",
+    "encodingOptions": {
+      "rle8": "RLE 8",
+      "rle16": "RLE 16"
+    },
+    "errors": {
+      "connectionFailed": "连接失败。请重试。",
+      "deviceNotFound": "未找到设备",
+      "authenticationFailed": "认证失败"
+    }
+  },
+  "sol": {
+    "connect": "连接",
+    "disconnect": "断开",
+    "connecting": "连接中...",
+    "title": "Serial Over LAN",
+    "errors": {
+      "connectionFailed": "SOL连接失败。请重试。",
+      "notEnabled": "此设备未启用SOL"
+    }
+  },
+  "ider": {
+    "start": "启动 IDER",
+    "stop": "停止 IDER",
+    "selectFile": "选择 ISO/IMG 文件",
+    "title": "IDE重定向",
+    "errors": {
+      "connectionFailed": "IDER连接失败。请重试。",
+      "noFileSelected": "未选择文件"
+    }
+  }
+}
