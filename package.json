@@ -47,7 +47,7 @@
     "sass": "^1.56.1",
     "styled-components": "^6.1.18",
     "winston": "^3.0.0",
-    "ws": "^8.18.2"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
