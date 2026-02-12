@@ -1,0 +1,37 @@
+{
+  "kvm": {
+    "connect": "Conectar KVM",
+    "connecting": "Conectando KVM",
+    "disconnect": "Desconectar KVM",
+    "encoding": "Codificación",
+    "encodingOptions": {
+      "rle8": "RLE 8",
+      "rle16": "RLE 16"
+    },
+    "errors": {
+      "connectionFailed": "Conexión fallida. Por favor, inténtelo de nuevo.",
+      "deviceNotFound": "Dispositivo no encontrado",
+      "authenticationFailed": "Autenticación fallida"
+    }
+  },
+  "sol": {
+    "connect": "Conectar",
+    "disconnect": "Desconectar",
+    "connecting": "Conectando...",
+    "title": "Serial Over LAN",
+    "errors": {
+      "connectionFailed": "Conexión SOL fallida. Por favor, inténtelo de nuevo.",
+      "notEnabled": "SOL no está habilitado en este dispositivo"
+    }
+  },
+  "ider": {
+    "start": "Iniciar IDER",
+    "stop": "Detener IDER",
+    "selectFile": "Seleccionar archivo ISO/IMG",
+    "title": "Redirección IDE",
+    "errors": {
+      "connectionFailed": "Conexión IDER fallida. Por favor, inténtelo de nuevo.",
+      "noFileSelected": "Ningún archivo seleccionado"
+    }
+  }
+}

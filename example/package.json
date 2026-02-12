@@ -1,0 +1,27 @@
+{
+  "name": "ui-toolkit-react-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@device-management-toolkit/ui-toolkit": "^3.3.9",
+    "@xterm/xterm": "^6.0.0",
+    "i18next": "^25.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^16.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@vitejs/plugin-basic-ssl": "^2.1.4",
+    "@vitejs/plugin-react": "^5.1.2",
+    "typescript": "^5.0.4",
+    "vite": "^7.3.1"
+  }
+}

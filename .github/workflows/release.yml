@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: write  # for Git to git push
+      contents: write # for Git to git push
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
@@ -33,9 +33,9 @@ jobs:
       - name: Use Node.js 24.x
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
-          node-version: "24.x"
+          node-version: '24.x'
       - run: npm ci
-      - run: npm run build-ext --if-present
+      - run: npm run build
       - run: rsync -a package.json README.md ./dist/
       - name: Semantic Release
         id: semantic
@@ -48,7 +48,7 @@ jobs:
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
           echo "Publishing @device-management-toolkit/ui-toolkit-react@${{ steps.semantic.outputs.new_release_version }}"
-          
+
           sed -i 's/"@open-amt-cloud-toolkit\/ui-toolkit-react"/"@device-management-toolkit\/ui-toolkit-react"/' dist/package.json
           sed -i 's/"version": "[^"]*"/"version": "${{ steps.semantic.outputs.new_release_version }}"/' dist/package.json
           cd dist
