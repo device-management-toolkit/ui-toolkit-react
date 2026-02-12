@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@device-management-toolkit/ui-toolkit": "^3.3.9",
-    "@xterm/xterm": "^5.5.0",
+    "@xterm/xterm": "^6.0.0",
     "i18next": "^25.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
