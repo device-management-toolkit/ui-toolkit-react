@@ -12,7 +12,7 @@ on:
   schedule:
     - cron: '44 11 * * 6'
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -41,7 +41,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: "Run analysis"
+      - name: 'Run analysis'
         uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
         with:
           results_file: results.sarif
@@ -63,7 +63,7 @@ jobs:
 
       # Upload the results as artifacts (optional). Commenting out will disable uploads of run results in SARIF
       # format to the repository Actions tab.
-      - name: "Upload artifact"
+      - name: 'Upload artifact'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v3.1.0
         with:
           name: SARIF file
