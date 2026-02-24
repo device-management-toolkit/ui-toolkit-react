@@ -34,9 +34,11 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: '24.x'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run build
       - run: rsync -a package.json README.md ./dist/
+      - run: sed -i 's|"dist/index|"index|g' dist/package.json
       - name: Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
@@ -44,12 +46,12 @@ jobs:
           semantic_version: 25.0.2 # It is recommended to specify version range for semantic-release.
         env:
           GITHUB_TOKEN: ${{ secrets.ROSIE_TOKEN }}
-      - name: Publish to @device-management-toolkit
+      - name: Publish to @open-amt-cloud-toolkit
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
-          echo "Publishing @device-management-toolkit/ui-toolkit-react@${{ steps.semantic.outputs.new_release_version }}"
+          echo "Publishing @open-amt-cloud-toolkit/ui-toolkit-react@${{ steps.semantic.outputs.new_release_version }}"
 
-          sed -i 's/"@open-amt-cloud-toolkit\/ui-toolkit-react"/"@device-management-toolkit\/ui-toolkit-react"/' dist/package.json
+          sed -i 's/"@device-management-toolkit\/ui-toolkit-react"/"@open-amt-cloud-toolkit\/ui-toolkit-react"/' dist/package.json
           sed -i 's/"version": "[^"]*"/"version": "${{ steps.semantic.outputs.new_release_version }}"/' dist/package.json
           cd dist
           npm publish
