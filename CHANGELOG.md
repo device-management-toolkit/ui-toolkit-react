@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.0...v5.0.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* remove prepublishOnly  to fix publish failure ([#1907](https://github.com/device-management-toolkit/ui-toolkit-react/issues/1907)) ([bed6e83](https://github.com/device-management-toolkit/ui-toolkit-react/commit/bed6e83ac147a3ba92207e9381897a192333a098))
+
 # [5.0.0](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.6...v5.0.0) (2026-02-24)
 
 
