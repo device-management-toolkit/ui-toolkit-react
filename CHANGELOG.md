@@ -1,3 +1,21 @@
+## [5.0.1](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.0...v5.0.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* remove prepublishOnly  to fix publish failure ([#1907](https://github.com/device-management-toolkit/ui-toolkit-react/issues/1907)) ([bed6e83](https://github.com/device-management-toolkit/ui-toolkit-react/commit/bed6e83ac147a3ba92207e9381897a192333a098))
+
+# [5.0.0](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.6...v5.0.0) (2026-02-24)
+
+
+* feat!: modernize library with functional components and style props API ([#1906](https://github.com/device-management-toolkit/ui-toolkit-react/issues/1906)) ([50a6183](https://github.com/device-management-toolkit/ui-toolkit-react/commit/50a618347db3b25fbc4a8886276ae762b67cd51b))
+
+
+### BREAKING CHANGES
+
+* Component styling now uses style props (containerStyle, canvasStyle, etc.) instead of CSS classes, canvasWidth/canvasHeight
+props now apply to CSS display size, replaced webpack with rollup for builds, restructured exports from src/components/*
+
 ## [4.0.6](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.5...v4.0.6) (2026-01-08)
 
 ## [4.0.5](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v4.0.4...v4.0.5) (2025-12-02)

@@ -73,11 +73,11 @@ npm run build
 
 ## Additional Resources
 
-- For detailed documentation and Getting Started, [visit the docs site](https://device-management-toolkit.github.io/docs).
+- For detailed documentation and Getting Started, [visit the docs site](https://device-management-toolkit.github.io/docs)
 
-- Looking to contribute? [Find more information here about contribution guidelines and practices](./CONTRIBUTING.md).
+- Looking to contribute? [Find more information here about contribution guidelines and practices](./CONTRIBUTING.md)
 
-- Find a bug? Or have ideas for new features? [Open a new Issue](https://github.com/device-management-toolkit/ui-toolkit-react/issues).
+- Find a bug? Or have ideas for new features? [Open a new Issue](https://github.com/device-management-toolkit/ui-toolkit-react/issues)
 
 - Need additional support or want to get the latest news and events about Open AMT? Connect with the team directly through Discord.
 
