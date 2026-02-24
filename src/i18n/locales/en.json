@@ -1,0 +1,37 @@
+{
+  "kvm": {
+    "connect": "Connect KVM",
+    "connecting": "Connecting KVM",
+    "disconnect": "Disconnect KVM",
+    "encoding": "Encoding",
+    "encodingOptions": {
+      "rle8": "RLE 8",
+      "rle16": "RLE 16"
+    },
+    "errors": {
+      "connectionFailed": "Connection failed. Please try again.",
+      "deviceNotFound": "Device not found",
+      "authenticationFailed": "Authentication failed"
+    }
+  },
+  "sol": {
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connecting": "Connecting...",
+    "title": "Serial Over LAN",
+    "errors": {
+      "connectionFailed": "SOL connection failed. Please try again.",
+      "notEnabled": "SOL is not enabled on this device"
+    }
+  },
+  "ider": {
+    "start": "Start IDER",
+    "stop": "Stop IDER",
+    "selectFile": "Choose File",
+    "noFileSelected": "No file chosen",
+    "title": "IDE Redirection",
+    "errors": {
+      "connectionFailed": "IDER connection failed. Please try again."
+    }
+  }
+}

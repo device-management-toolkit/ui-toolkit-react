@@ -1,23 +1,26 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist",
-        "sourceMap": true,
-        "noImplicitAny": false,
-        "moduleResolution": "node",
-        "allowJs": true,
-        "target": "es6",
-        "jsx": "react",
-        "module": "esnext",
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "strictNullChecks": true,
-        "declaration": true,
-        "declarationDir": "./dist",
-        "skipLibCheck": true
-    },
-    "include": [
-        "./src/test/**/*",
-        "./src/reactjs/**/*",
-        "jest.setup.ts"
-    ]
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "sourceMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "src/test"]
 }
