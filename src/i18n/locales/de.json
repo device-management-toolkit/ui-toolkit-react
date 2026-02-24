@@ -1,0 +1,37 @@
+{
+  "kvm": {
+    "connect": "KVM verbinden",
+    "connecting": "KVM wird verbunden",
+    "disconnect": "KVM trennen",
+    "encoding": "Kodierung",
+    "encodingOptions": {
+      "rle8": "RLE 8",
+      "rle16": "RLE 16"
+    },
+    "errors": {
+      "connectionFailed": "Verbindung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "deviceNotFound": "Gerät nicht gefunden",
+      "authenticationFailed": "Authentifizierung fehlgeschlagen"
+    }
+  },
+  "sol": {
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "connecting": "Verbindung wird hergestellt...",
+    "title": "Serial Over LAN",
+    "errors": {
+      "connectionFailed": "SOL-Verbindung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "notEnabled": "SOL ist auf diesem Gerät nicht aktiviert"
+    }
+  },
+  "ider": {
+    "start": "IDER starten",
+    "stop": "IDER stoppen",
+    "selectFile": "ISO/IMG-Datei auswählen",
+    "title": "IDE-Umleitung",
+    "errors": {
+      "connectionFailed": "IDER-Verbindung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "noFileSelected": "Keine Datei ausgewählt"
+    }
+  }
+}
