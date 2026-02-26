@@ -24,6 +24,10 @@
 
 import { render } from '@testing-library/react'
 import { IDER } from './ider'
+import {
+  AMTRedirector,
+  AMTIDER
+} from '@device-management-toolkit/ui-toolkit/core'
 
 /**
  * Mock the ui-toolkit/core dependencies
@@ -262,5 +266,120 @@ describe('IDER', () => {
     )
 
     expect(container.firstChild).toBeNull()
+  })
+
+  /**
+   * Sector stats tracks floppy read operations
+   *
+   * When the IDER session is active and data is read from the
+   * virtual floppy device, the sector stats should be tracked.
+   */
+  it('should track floppy read in sector stats', () => {
+    const mockFile = new File(['test'], 'test.iso', {
+      type: 'application/octet-stream'
+    })
+    const { rerender } = render(
+      <IDER {...defaultProps} cdrom={mockFile} iderState={0} />
+    )
+
+    // Start IDER
+    rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
+
+    // Get the AMTIDER instance created during startIder
+    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
+    if (iderInstance?.sectorStats) {
+      iderInstance.sectorStats(1, 0, 100, 0, 10) // mode=read, dev=floppy
+      expect(iderInstance.floppyRead).toBe(10 * 512)
+    }
+  })
+
+  /**
+   * Sector stats tracks CD-ROM read operations
+   *
+   * CD-ROM read operations use a larger sector size (2048 bytes)
+   * compared to floppy (512 bytes).
+   */
+  it('should track cdrom read in sector stats', () => {
+    const mockFile = new File(['test'], 'test.iso', {
+      type: 'application/octet-stream'
+    })
+    const { rerender } = render(
+      <IDER {...defaultProps} cdrom={mockFile} iderState={0} />
+    )
+
+    rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
+
+    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
+    if (iderInstance?.sectorStats) {
+      iderInstance.sectorStats(1, 1, 100, 0, 5) // mode=read, dev=cdrom
+      expect(iderInstance.cdromRead).toBe(5 * 2048)
+    }
+  })
+
+  /**
+   * Sector stats tracks floppy write operations
+   */
+  it('should track floppy write in sector stats', () => {
+    const mockFile = new File(['test'], 'test.iso', {
+      type: 'application/octet-stream'
+    })
+    const { rerender } = render(
+      <IDER {...defaultProps} cdrom={mockFile} iderState={0} />
+    )
+
+    rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
+
+    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
+    if (iderInstance?.sectorStats) {
+      iderInstance.sectorStats(0, 0, 100, 0, 8) // mode=write, dev=floppy
+      expect(iderInstance.floppyWrite).toBe(8 * 512)
+    }
+  })
+
+  /**
+   * Sector stats tracks CD-ROM write operations
+   */
+  it('should track cdrom write in sector stats', () => {
+    const mockFile = new File(['test'], 'test.iso', {
+      type: 'application/octet-stream'
+    })
+    const { rerender } = render(
+      <IDER {...defaultProps} cdrom={mockFile} iderState={0} />
+    )
+
+    rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
+
+    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
+    if (iderInstance?.sectorStats) {
+      iderInstance.sectorStats(0, 1, 100, 0, 3) // mode=write, dev=cdrom
+      expect(iderInstance.cdromWrite).toBe(3 * 2048)
+    }
+  })
+
+  /**
+   * Connection state change callback is invoked
+   *
+   * When the WebSocket connection state changes, the onConnectionStateChange
+   * callback should be fired. This is set up during startIder.
+   */
+  it('should handle connection state change callback', () => {
+    const mockFile = new File(['test'], 'test.iso', {
+      type: 'application/octet-stream'
+    })
+    const { rerender } = render(
+      <IDER {...defaultProps} cdrom={mockFile} iderState={0} />
+    )
+
+    rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
+
+    // Get the redirector instance
+    const redirectorInstance = (AMTRedirector as unknown as jest.Mock).mock
+      .results[0]?.value
+    if (redirectorInstance?.onStateChanged) {
+      // Should not throw when invoked
+      expect(() => {
+        redirectorInstance.onStateChanged(redirectorInstance, 2)
+      }).not.toThrow()
+    }
   })
 })

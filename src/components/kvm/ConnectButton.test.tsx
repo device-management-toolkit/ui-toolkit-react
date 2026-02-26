@@ -118,7 +118,7 @@ describe('ConnectButton', () => {
       />
     )
 
-    expect(screen.getByRole('button')).toHaveStyle('background-color: red')
+    expect(screen.getByRole('button')).toHaveStyle('background-color: rgb(255, 0, 0)')
   })
 
   /**

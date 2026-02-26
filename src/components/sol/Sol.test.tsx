@@ -26,8 +26,9 @@
  * the Sol component's UI logic in isolation.
  */
 
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { Sol } from './Sol'
+import { AMTRedirector } from '@device-management-toolkit/ui-toolkit/core'
 
 /**
  * Mock the Terminal component
@@ -39,7 +40,8 @@ import { Sol } from './Sol'
  */
 jest.mock('./Terminal', () => ({
   __esModule: true,
-  default: () => <div data-testid='mock-terminal'>Terminal</div>
+  default: () => <div data-testid='mock-terminal'>Terminal</div>,
+  Term: () => <div data-testid='mock-terminal'>Terminal</div>
 }))
 
 /**
@@ -160,7 +162,7 @@ describe('Sol', () => {
       <Sol {...defaultProps} containerStyle={customStyle} />
     )
 
-    expect(container.firstChild).toHaveStyle('background-color: green')
+    expect(container.firstChild).toHaveStyle('background-color: rgb(0, 128, 0)')
   })
 
   /**
@@ -184,7 +186,7 @@ describe('Sol', () => {
     const customStyle = { backgroundColor: 'purple' }
     render(<Sol {...defaultProps} buttonStyle={customStyle} />)
 
-    expect(screen.getByRole('button')).toHaveStyle('background-color: purple')
+    expect(screen.getByRole('button')).toHaveStyle('background-color: rgb(128, 0, 128)')
   })
 
   /**
@@ -262,5 +264,62 @@ describe('Sol', () => {
 
     // Terminal should not be visible when not connected
     expect(screen.queryByTestId('mock-terminal')).not.toBeInTheDocument()
+  })
+
+  /**
+   * Disconnect button shown when connected
+   *
+   * After connection state changes to 3 (ready), the button
+   * text should change to 'sol.disconnect' and the terminal should appear.
+   */
+  it('should show disconnect button and terminal when connected', () => {
+    render(<Sol {...defaultProps} />)
+
+    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+
+    act(() => {
+      mockRedirector.onStateChanged(mockRedirector, 3)
+    })
+
+    expect(screen.getByText('sol.disconnect')).toBeInTheDocument()
+    expect(screen.getByTestId('mock-terminal')).toBeInTheDocument()
+  })
+
+  /**
+   * Clicking disconnect stops the SOL connection
+   *
+   * When the user clicks disconnect, the component should stop
+   * the redirector and reset state to disconnected.
+   */
+  it('should stop SOL when clicking disconnect', () => {
+    render(<Sol {...defaultProps} />)
+
+    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+
+    // Simulate connected state
+    act(() => {
+      mockRedirector.onStateChanged(mockRedirector, 3)
+    })
+
+    // Click disconnect
+    fireEvent.click(screen.getByText('sol.disconnect'))
+
+    expect(mockRedirector.stop).toHaveBeenCalled()
+  })
+
+  /**
+   * Clicking connect starts the SOL connection
+   *
+   * When disconnected, clicking the connect button should initiate
+   * the WebSocket connection to the AMT device.
+   */
+  it('should start SOL when clicking connect', () => {
+    render(<Sol {...defaultProps} />)
+
+    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+
+    fireEvent.click(screen.getByText('sol.connect'))
+
+    expect(mockRedirector.start).toHaveBeenCalled()
   })
 })
