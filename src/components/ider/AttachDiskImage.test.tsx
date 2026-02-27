@@ -195,7 +195,7 @@ describe('AttachDiskImage', () => {
       <AttachDiskImage {...defaultProps} containerStyle={customStyle} />
     )
 
-    expect(container.firstChild).toHaveStyle('background-color: red')
+    expect(container.firstChild).toHaveStyle('background-color: rgb(255, 0, 0)')
   })
 
   /**
@@ -223,7 +223,7 @@ describe('AttachDiskImage', () => {
     render(<AttachDiskImage {...defaultProps} buttonStyle={customStyle} />)
 
     expect(screen.getByText('ider.start')).toHaveStyle(
-      'background-color: purple'
+      'background-color: rgb(128, 0, 128)'
     )
   })
 
@@ -251,7 +251,7 @@ describe('AttachDiskImage', () => {
     render(<AttachDiskImage {...defaultProps} fileSelectStyle={customStyle} />)
 
     expect(screen.getByText('ider.selectFile')).toHaveStyle(
-      'background-color: green'
+      'background-color: rgb(0, 128, 0)'
     )
   })
 

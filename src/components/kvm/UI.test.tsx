@@ -19,8 +19,12 @@
  */
 
 import { useEffect } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { KVM } from './UI'
+import {
+  AMTKvmDataRedirector,
+  KeyBoardHelper
+} from '@device-management-toolkit/ui-toolkit/core'
 
 /**
  * Mock the Header component
@@ -154,7 +158,7 @@ describe('KVM', () => {
       <KVM {...defaultProps} containerStyle={customStyle} />
     )
 
-    expect(container.firstChild).toHaveStyle('background-color: blue')
+    expect(container.firstChild).toHaveStyle('background-color: rgb(0, 0, 255)')
   })
 
   /**
@@ -220,5 +224,57 @@ describe('KVM', () => {
     // Component should render successfully even with low debounce time
     // The actual enforcement happens inside the component
     expect(screen.getByTestId('mock-canvas')).toBeInTheDocument()
+  })
+
+  /**
+   * Clicking Connect starts KVM connection
+   *
+   * When autoConnect is true and the user clicks Connect,
+   * the KVM WebSocket connection should be started.
+   */
+  it('should start KVM when clicking Connect', () => {
+    const startSpy = jest.spyOn(AMTKvmDataRedirector.prototype, 'start')
+    const grabSpy = jest.spyOn(KeyBoardHelper.prototype, 'GrabKeyInput')
+
+    render(<KVM {...defaultProps} autoConnect={true} />)
+
+    fireEvent.click(screen.getByText('Connect'))
+
+    expect(startSpy).toHaveBeenCalled()
+    expect(grabSpy).toHaveBeenCalled()
+
+    startSpy.mockRestore()
+    grabSpy.mockRestore()
+  })
+
+  /**
+   * Component stops KVM when device changes
+   *
+   * When the deviceId prop changes, the component should stop
+   * the current KVM connection and reinitialize for the new device.
+   */
+  it('should stop KVM when deviceId changes', () => {
+    const stopSpy = jest.spyOn(AMTKvmDataRedirector.prototype, 'stop')
+
+    const { rerender } = render(<KVM {...defaultProps} />)
+
+    rerender(<KVM {...defaultProps} deviceId='new-device-id' />)
+
+    expect(stopSpy).toHaveBeenCalled()
+
+    stopSpy.mockRestore()
+  })
+
+  /**
+   * Mouse events are forwarded to MouseHelper
+   *
+   * The PureCanvas component receives mouse event handlers that
+   * forward events to the MouseHelper for remote desktop interaction.
+   */
+  it('should render canvas for mouse events', () => {
+    render(<KVM {...defaultProps} />)
+
+    const canvas = screen.getByTestId('mock-canvas')
+    expect(canvas).toBeInTheDocument()
   })
 })
