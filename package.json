@@ -57,7 +57,7 @@
     "intel"
   ],
   "dependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.11",
+    "@device-management-toolkit/ui-toolkit": "^3.3.12",
     "@xterm/xterm": "^6.0.0",
     "i18next": "^25.2.1",
     "react-i18next": "^16.2.1"
