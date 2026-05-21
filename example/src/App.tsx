@@ -31,10 +31,7 @@ const App: React.FC = () => {
 
   const auth = useAuth()
   const getRelayServer = (baseUrl: string): string => {
-    if (baseUrl.startsWith('https://')) {
-      return `${baseUrl}/mps/ws/relay`
-    }
-    if (baseUrl.startsWith('http://')) {
+    if (baseUrl.startsWith('https://') || baseUrl.startsWith('http://')) {
       return `${baseUrl}/relay`
     }
     return baseUrl
@@ -46,7 +43,7 @@ const App: React.FC = () => {
   }
 
   const componentProps = {
-    deviceId: config.deviceId,
+    deviceId: auth.systemId || config.deviceId,
     mpsServer: relayServer,
     authToken: auth.token
   }
@@ -61,26 +58,26 @@ const App: React.FC = () => {
       <div className='config-panel'>
         <div className='config-grid'>
           <input
-            placeholder='/mps/login or /api/v1/authorize'
+            placeholder='https://<host[:port]>'
             value={config.mpsServer}
             onChange={(e) => updateConfig('mpsServer', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='Device GUID'
+            placeholder='System ID (optional, auto-discovers first if empty)'
             value={config.deviceId}
             onChange={(e) => updateConfig('deviceId', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='MPS Username'
+            placeholder='Redfish Username'
             value={config.username}
             onChange={(e) => updateConfig('username', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
             type='password'
-            placeholder='MPS Password'
+            placeholder='Redfish Password'
             value={config.password}
             onChange={(e) => updateConfig('password', e.target.value)}
             disabled={auth.isAuthenticated}
@@ -96,10 +93,10 @@ const App: React.FC = () => {
             disabled={auth.isLoading}
           >
             {auth.isLoading
-              ? 'Authenticating...'
+              ? 'Connecting...'
               : auth.isAuthenticated
                 ? 'Disconnect'
-                : 'Authenticate'}
+                : 'Connect'}
           </button>
         </div>
 
