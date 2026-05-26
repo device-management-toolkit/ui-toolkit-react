@@ -5,9 +5,11 @@
 
 import { useState } from 'react'
 
+export type ApiMode = 'legacy' | 'redfish'
+
 interface AuthState {
   token: string
-  systemId: string
+  deviceId: string
   isAuthenticated: boolean
   isLoading: boolean
   error: string
@@ -69,16 +71,22 @@ const parseSystemIdFromPath = (systemPath: string): string => {
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     token: '',
-    systemId: '',
+    deviceId: '',
     isAuthenticated: false,
     isLoading: false,
     error: ''
   })
 
-  const connect = async (config: AuthConfig) => {
+  const connect = async (config: AuthConfig, apiMode: ApiMode) => {
     const { mpsServer, deviceId, username, password } = config
 
-    if (!username || !password || !mpsServer) {
+    const missingRequiredFields =
+      !username ||
+      !password ||
+      !mpsServer ||
+      (apiMode === 'legacy' && !deviceId)
+
+    if (missingRequiredFields) {
       setState((s) => ({ ...s, error: 'Please fill in all required fields' }))
       return
     }
@@ -90,87 +98,166 @@ export const useAuth = () => {
       if (!/^https?:\/\//.test(baseUrl)) {
         throw new Error('Server URL must start with http:// or https://')
       }
-      const authHeader = getBasicAuthHeader(username, password)
 
-      let systemPath = ''
-      if (deviceId.trim().length > 0) {
-        systemPath = getSystemPathFromInput(deviceId.trim())
+      if (apiMode === 'legacy') {
+        // Support both deployment styles by trying both legacy auth paths.
+        const authPaths = ['/api/v1/authorize', '/mps/login/api/v1/authorize']
+        let authBody: { token?: string; accessToken?: string } | null = null
+        let authPathUsed = ''
+        let authError = 'Authentication failed'
+
+        for (const authPath of authPaths) {
+          const authRes = await fetch(`${baseUrl}${authPath}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          })
+
+          if (!authRes.ok) {
+            authError = `Authentication failed: ${authRes.status} ${authRes.statusText}`
+            continue
+          }
+
+          const contentType = authRes.headers.get('content-type') ?? ''
+          if (!contentType.includes('application/json')) {
+            authError = `Authentication endpoint returned non-JSON response at ${authPath}`
+            continue
+          }
+
+          authBody = (await authRes.json()) as {
+            token?: string
+            accessToken?: string
+          }
+          authPathUsed = authPath
+          break
+        }
+
+        if (!authBody) {
+          throw new Error(authError)
+        }
+
+        const accessToken = authBody.token ?? authBody.accessToken
+
+        if (!accessToken) {
+          throw new Error('No token received')
+        }
+
+        const redirRes = await fetch(
+          `${baseUrl}${authPathUsed}/redirection/${encodeURIComponent(deviceId.trim())}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        )
+
+        if (!redirRes.ok) {
+          throw new Error(
+            `Redirection failed: ${redirRes.status} ${redirRes.statusText}`
+          )
+        }
+
+        const redirBody = (await redirRes.json()) as {
+          token?: string
+          RedirectionToken?: string
+          Token?: string
+        }
+        const token = redirBody.token ?? redirBody.RedirectionToken ?? redirBody.Token
+        if (!token) {
+          throw new Error('No redirection token received')
+        }
+
+        setState({
+          token,
+          deviceId: deviceId.trim(),
+          isAuthenticated: true,
+          isLoading: false,
+          error: ''
+        })
       } else {
-        const systemsRes = await fetch(`${baseUrl}/redfish/v1/Systems`, {
+        const authHeader = getBasicAuthHeader(username, password)
+
+        let systemPath = ''
+        if (deviceId.trim().length > 0) {
+          systemPath = getSystemPathFromInput(deviceId.trim())
+        } else {
+          const systemsRes = await fetch(`${baseUrl}/redfish/v1/Systems`, {
+            headers: {
+              Accept: 'application/json',
+              Authorization: authHeader
+            }
+          })
+          if (!systemsRes.ok) {
+            throw new Error(
+              `Failed to list systems: ${systemsRes.status} ${systemsRes.statusText}`
+            )
+          }
+
+          const systemsBody = (await systemsRes.json()) as RedfishMembersResponse
+          const firstMember = systemsBody.Members?.[0]?.['@odata.id']
+          if (!firstMember) {
+            throw new Error('No systems found at /redfish/v1/Systems')
+          }
+
+          systemPath = firstMember
+        }
+
+        const systemRes = await fetch(toAbsoluteUrl(baseUrl, systemPath), {
           headers: {
             Accept: 'application/json',
             Authorization: authHeader
           }
         })
-        if (!systemsRes.ok) {
+        if (!systemRes.ok) {
           throw new Error(
-            `Failed to list systems: ${systemsRes.status} ${systemsRes.statusText}`
+            `Failed to read system: ${systemRes.status} ${systemRes.statusText}`
           )
         }
 
-        const systemsBody = (await systemsRes.json()) as RedfishMembersResponse
-        const firstMember = systemsBody.Members?.[0]?.['@odata.id']
-        if (!firstMember) {
-          throw new Error('No systems found at /redfish/v1/Systems')
+        const systemBody = (await systemRes.json()) as RedfishSystem
+
+        const actionTarget =
+          systemBody.Actions?.Oem?.[
+            '#IntelComputerSystem.GenerateRedirectionToken'
+          ]?.target
+        const fallbackActionPath = `${systemPath.replace(/\/+$/, '')}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken`
+        const actionUrl = toAbsoluteUrl(baseUrl, actionTarget ?? fallbackActionPath)
+
+        const tokenRes = await fetch(actionUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: authHeader
+          },
+          body: JSON.stringify({})
+        })
+        if (!tokenRes.ok) {
+          throw new Error(
+            `Token action failed: ${tokenRes.status} ${tokenRes.statusText}`
+          )
         }
 
-        systemPath = firstMember
-      }
-
-      const systemRes = await fetch(toAbsoluteUrl(baseUrl, systemPath), {
-        headers: {
-          Accept: 'application/json',
-          Authorization: authHeader
+        const tokenBody = (await tokenRes.json()) as {
+          token?: string
+          RedirectionToken?: string
+          Token?: string
         }
-      })
-      if (!systemRes.ok) {
-        throw new Error(
-          `Failed to read system: ${systemRes.status} ${systemRes.statusText}`
-        )
+        const token =
+          tokenBody.token ?? tokenBody.RedirectionToken ?? tokenBody.Token
+        if (!token) {
+          throw new Error('No redirection token returned by action')
+        }
+
+        setState({
+          token,
+          deviceId: systemBody.Id ?? parseSystemIdFromPath(systemPath),
+          isAuthenticated: true,
+          isLoading: false,
+          error: ''
+        })
       }
-
-      const systemBody = (await systemRes.json()) as RedfishSystem
-
-      const actionTarget =
-        systemBody.Actions?.Oem?.[
-          '#IntelComputerSystem.GenerateRedirectionToken'
-        ]?.target
-      const fallbackActionPath = `${systemPath.replace(/\/+$/, '')}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken`
-      const actionUrl = toAbsoluteUrl(baseUrl, actionTarget ?? fallbackActionPath)
-
-      const tokenRes = await fetch(actionUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: authHeader
-        },
-        body: JSON.stringify({})
-      })
-      if (!tokenRes.ok) {
-        throw new Error(
-          `Token action failed: ${tokenRes.status} ${tokenRes.statusText}`
-        )
-      }
-
-      const tokenBody = (await tokenRes.json()) as {
-        token?: string
-        RedirectionToken?: string
-        Token?: string
-      }
-      const token =
-        tokenBody.token ?? tokenBody.RedirectionToken ?? tokenBody.Token
-      if (!token) {
-        throw new Error('No redirection token returned by action')
-      }
-
-      setState({
-        token,
-        systemId: systemBody.Id ?? parseSystemIdFromPath(systemPath),
-        isAuthenticated: true,
-        isLoading: false,
-        error: ''
-      })
     } catch (err) {
       setState((s) => ({
         ...s,
@@ -183,7 +270,7 @@ export const useAuth = () => {
   const disconnect = () => {
     setState({
       token: '',
-      systemId: '',
+      deviceId: '',
       isAuthenticated: false,
       isLoading: false,
       error: ''
