@@ -9,7 +9,7 @@ import {
   Sol,
   AttachDiskImage
 } from '@device-management-toolkit/ui-toolkit-react'
-import { useAuth } from './useAuth'
+import { useAuth, type ApiMode } from './useAuth'
 
 type TabType = 'kvm' | 'sol' | 'ider'
 
@@ -21,6 +21,7 @@ const TABS: { id: TabType; label: string }[] = [
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('kvm')
+  const [apiMode, setApiMode] = useState<ApiMode>('legacy')
   const [config, setConfig] = useState({
     mpsServer: '',
     deviceId: '',
@@ -30,23 +31,32 @@ const App: React.FC = () => {
   })
 
   const auth = useAuth()
-  const getRelayServer = (baseUrl: string): string => {
-    if (baseUrl.startsWith('https://')) {
-      return `${baseUrl}/mps/ws/relay`
+  const getRelayServer = (baseUrl: string, mode: ApiMode): string => {
+    const normalized = baseUrl.replace(/\/+$/, '')
+
+    if (mode === 'legacy') {
+      if (normalized.startsWith('https://')) {
+        return `${normalized}/mps/ws/relay`
+      }
+      if (normalized.startsWith('http://')) {
+        return `${normalized}/relay`
+      }
+      return normalized
     }
-    if (baseUrl.startsWith('http://')) {
-      return `${baseUrl}/relay`
+
+    if (normalized.startsWith('https://') || normalized.startsWith('http://')) {
+      return `${normalized}/relay`
     }
-    return baseUrl
+    return normalized
   }
-  const relayServer = getRelayServer(config.mpsServer)
+  const relayServer = getRelayServer(config.mpsServer, apiMode)
 
   const updateConfig = (field: string, value: string) => {
     setConfig((c) => ({ ...c, [field]: value }))
   }
 
   const componentProps = {
-    deviceId: config.deviceId,
+    deviceId: apiMode === 'redfish' ? auth.deviceId || config.deviceId : config.deviceId,
     mpsServer: relayServer,
     authToken: auth.token
   }
@@ -59,28 +69,71 @@ const App: React.FC = () => {
       </div>
 
       <div className='config-panel'>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '12px'
+          }}
+        >
+          <span style={{ fontWeight: 600 }}>API Mode:</span>
+          <button
+            type='button'
+            onClick={() => setApiMode('legacy')}
+            disabled={auth.isAuthenticated || auth.isLoading}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              backgroundColor: apiMode === 'legacy' ? '#007bff' : '#fff',
+              color: apiMode === 'legacy' ? '#fff' : '#333',
+              cursor: auth.isAuthenticated || auth.isLoading ? 'not-allowed' : 'pointer',
+              opacity: auth.isAuthenticated || auth.isLoading ? 0.6 : 1
+            }}
+          >
+            Console REST (Legacy)
+          </button>
+          <button
+            type='button'
+            onClick={() => setApiMode('redfish')}
+            disabled={auth.isAuthenticated || auth.isLoading}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              backgroundColor: apiMode === 'redfish' ? '#007bff' : '#fff',
+              color: apiMode === 'redfish' ? '#fff' : '#333',
+              cursor: auth.isAuthenticated || auth.isLoading ? 'not-allowed' : 'pointer',
+              opacity: auth.isAuthenticated || auth.isLoading ? 0.6 : 1
+            }}
+          >
+            Redfish API
+          </button>
+        </div>
+
         <div className='config-grid'>
           <input
-            placeholder='/mps/login or /api/v1/authorize'
+            placeholder='http(s)://<host[:port]>'
             value={config.mpsServer}
             onChange={(e) => updateConfig('mpsServer', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='Device GUID'
+            placeholder='Device ID (optional for Redfish auto-discovery)'
             value={config.deviceId}
             onChange={(e) => updateConfig('deviceId', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='MPS Username'
+            placeholder='Username'
             value={config.username}
             onChange={(e) => updateConfig('username', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
             type='password'
-            placeholder='MPS Password'
+            placeholder='Password'
             value={config.password}
             onChange={(e) => updateConfig('password', e.target.value)}
             disabled={auth.isAuthenticated}
@@ -91,15 +144,19 @@ const App: React.FC = () => {
           <button
             className={auth.isAuthenticated ? 'btn-danger' : 'btn-success'}
             onClick={() =>
-              auth.isAuthenticated ? auth.disconnect() : auth.connect(config)
+              auth.isAuthenticated ? auth.disconnect() : auth.connect(config, apiMode)
             }
             disabled={auth.isLoading}
           >
             {auth.isLoading
-              ? 'Authenticating...'
+              ? apiMode === 'legacy'
+                ? 'Authenticating...'
+                : 'Connecting...'
               : auth.isAuthenticated
                 ? 'Disconnect'
-                : 'Authenticate'}
+                : apiMode === 'legacy'
+                  ? 'Authenticate'
+                  : 'Connect'}
           </button>
         </div>
 
