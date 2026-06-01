@@ -52,7 +52,15 @@ const toAbsoluteUrl = (baseUrl: string, pathOrUrl: string): string => {
 }
 
 const getBasicAuthHeader = (username: string, password: string): string => {
-  return `Basic ${btoa(`${username}:${password}`)}`
+  const credentials = `${username}:${password}`
+  const utf8Bytes = new TextEncoder().encode(credentials)
+  let binary = ''
+
+  for (const byte of utf8Bytes) {
+    binary += String.fromCharCode(byte)
+  }
+
+  return `Basic ${btoa(binary)}`
 }
 
 const getSystemPathFromInput = (deviceId: string): string => {
@@ -94,9 +102,16 @@ export const useAuth = () => {
     setState((s) => ({ ...s, isLoading: true, error: '' }))
 
     try {
-      const baseUrl = ensureNoTrailingSlash(mpsServer)
+      const baseUrl = ensureNoTrailingSlash(mpsServer.trim())
       if (!/^https?:\/\//.test(baseUrl)) {
         throw new Error('Server URL must start with http:// or https://')
+      }
+
+      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseUrl)
+      if (apiMode === 'redfish' && baseUrl.startsWith('http://') && !isLocalhost) {
+        throw new Error(
+          'Redfish mode requires https:// to avoid sending Basic auth credentials over an unencrypted connection'
+        )
       }
 
       if (apiMode === 'legacy') {

@@ -82,6 +82,7 @@ const App: React.FC = () => {
             type='button'
             onClick={() => setApiMode('legacy')}
             disabled={auth.isAuthenticated || auth.isLoading}
+            aria-pressed={apiMode === 'legacy'}
             style={{
               padding: '6px 10px',
               borderRadius: '4px',
@@ -98,6 +99,7 @@ const App: React.FC = () => {
             type='button'
             onClick={() => setApiMode('redfish')}
             disabled={auth.isAuthenticated || auth.isLoading}
+            aria-pressed={apiMode === 'redfish'}
             style={{
               padding: '6px 10px',
               borderRadius: '4px',
