@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 
-export type ApiMode = 'legacy' | 'redfish'
+export type ApiMode = 'restapi' | 'redfish'
 
 interface AuthState {
   token: string
@@ -33,11 +33,6 @@ interface RedfishSystem {
   }
 }
 
-interface RedfishMembersResponse {
-  Members?: Array<{
-    '@odata.id'?: string
-  }>
-}
 
 const ensureNoTrailingSlash = (url: string): string => url.replace(/\/+$/, '')
 
@@ -92,7 +87,7 @@ export const useAuth = () => {
       !username ||
       !password ||
       !mpsServer ||
-      (apiMode === 'legacy' && !deviceId)
+      !deviceId
 
     if (missingRequiredFields) {
       setState((s) => ({ ...s, error: 'Please fill in all required fields' }))
@@ -114,8 +109,8 @@ export const useAuth = () => {
         )
       }
 
-      if (apiMode === 'legacy') {
-        // Support both deployment styles by trying both legacy auth paths.
+      if (apiMode === 'restapi') {
+        // Support both deployment styles by trying both REST API auth paths.
         const authPaths = ['/api/v1/authorize', '/mps/login/api/v1/authorize']
         let authBody: { token?: string; accessToken?: string } | null = null
         let authPathUsed = ''
@@ -193,30 +188,7 @@ export const useAuth = () => {
       } else {
         const authHeader = getBasicAuthHeader(username, password)
 
-        let systemPath = ''
-        if (deviceId.trim().length > 0) {
-          systemPath = getSystemPathFromInput(deviceId.trim())
-        } else {
-          const systemsRes = await fetch(`${baseUrl}/redfish/v1/Systems`, {
-            headers: {
-              Accept: 'application/json',
-              Authorization: authHeader
-            }
-          })
-          if (!systemsRes.ok) {
-            throw new Error(
-              `Failed to list systems: ${systemsRes.status} ${systemsRes.statusText}`
-            )
-          }
-
-          const systemsBody = (await systemsRes.json()) as RedfishMembersResponse
-          const firstMember = systemsBody.Members?.[0]?.['@odata.id']
-          if (!firstMember) {
-            throw new Error('No systems found at /redfish/v1/Systems')
-          }
-
-          systemPath = firstMember
-        }
+        const systemPath = getSystemPathFromInput(deviceId.trim())
 
         const systemRes = await fetch(toAbsoluteUrl(baseUrl, systemPath), {
           headers: {

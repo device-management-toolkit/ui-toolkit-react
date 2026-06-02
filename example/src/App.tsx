@@ -11,6 +11,8 @@ import {
 } from '@device-management-toolkit/ui-toolkit-react'
 import { useAuth, type ApiMode } from './useAuth'
 
+const envApiMode = import.meta.env.VITE_API_MODE === 'redfish' ? 'redfish' : 'restapi'
+
 type TabType = 'kvm' | 'sol' | 'ider'
 
 const TABS: { id: TabType; label: string }[] = [
@@ -21,7 +23,7 @@ const TABS: { id: TabType; label: string }[] = [
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('kvm')
-  const [apiMode, setApiMode] = useState<ApiMode>('legacy')
+  const apiMode: ApiMode = envApiMode
   const [config, setConfig] = useState({
     mpsServer: '',
     deviceId: '',
@@ -31,10 +33,11 @@ const App: React.FC = () => {
   })
 
   const auth = useAuth()
+
   const getRelayServer = (baseUrl: string, mode: ApiMode): string => {
     const normalized = baseUrl.replace(/\/+$/, '')
 
-    if (mode === 'legacy') {
+    if (mode === 'restapi') {
       if (normalized.startsWith('https://')) {
         return `${normalized}/mps/ws/relay`
       }
@@ -78,40 +81,9 @@ const App: React.FC = () => {
           }}
         >
           <span style={{ fontWeight: 600 }}>API Mode:</span>
-          <button
-            type='button'
-            onClick={() => setApiMode('legacy')}
-            disabled={auth.isAuthenticated || auth.isLoading}
-            aria-pressed={apiMode === 'legacy'}
-            style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              backgroundColor: apiMode === 'legacy' ? '#007bff' : '#fff',
-              color: apiMode === 'legacy' ? '#fff' : '#333',
-              cursor: auth.isAuthenticated || auth.isLoading ? 'not-allowed' : 'pointer',
-              opacity: auth.isAuthenticated || auth.isLoading ? 0.6 : 1
-            }}
-          >
-            Console REST (Legacy)
-          </button>
-          <button
-            type='button'
-            onClick={() => setApiMode('redfish')}
-            disabled={auth.isAuthenticated || auth.isLoading}
-            aria-pressed={apiMode === 'redfish'}
-            style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              backgroundColor: apiMode === 'redfish' ? '#007bff' : '#fff',
-              color: apiMode === 'redfish' ? '#fff' : '#333',
-              cursor: auth.isAuthenticated || auth.isLoading ? 'not-allowed' : 'pointer',
-              opacity: auth.isAuthenticated || auth.isLoading ? 0.6 : 1
-            }}
-          >
-            Redfish API
-          </button>
+          <span style={{ padding: '6px 10px' }}>
+            {apiMode === 'redfish' ? 'Redfish API' : 'Console REST API'}
+          </span>
         </div>
 
         <div className='config-grid'>
@@ -122,7 +94,7 @@ const App: React.FC = () => {
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='Device ID (optional for Redfish auto-discovery)'
+            placeholder='Device ID'
             value={config.deviceId}
             onChange={(e) => updateConfig('deviceId', e.target.value)}
             disabled={auth.isAuthenticated}
@@ -151,12 +123,12 @@ const App: React.FC = () => {
             disabled={auth.isLoading}
           >
             {auth.isLoading
-              ? apiMode === 'legacy'
+              ? apiMode === 'restapi'
                 ? 'Authenticating...'
                 : 'Connecting...'
               : auth.isAuthenticated
                 ? 'Disconnect'
-                : apiMode === 'legacy'
+                : apiMode === 'restapi'
                   ? 'Authenticate'
                   : 'Connect'}
           </button>
