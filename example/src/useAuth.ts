@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 
-export type ApiMode = 'restapi' | 'redfish'
+export type ApiMode = 'rest' | 'redfish'
 
 interface AuthState {
   token: string
@@ -22,16 +22,7 @@ interface AuthConfig {
   password: string
 }
 
-interface RedfishSystem {
-  Id?: string
-  Actions?: {
-    Oem?: {
-      '#IntelComputerSystem.GenerateRedirectionToken'?: {
-        target?: string
-      }
-    }
-  }
-}
+
 
 
 const ensureNoTrailingSlash = (url: string): string => url.replace(/\/+$/, '')
@@ -109,7 +100,7 @@ export const useAuth = () => {
         )
       }
 
-      if (apiMode === 'restapi') {
+      if (apiMode === 'rest') {
         // Support both deployment styles by trying both REST API auth paths.
         const authPaths = ['/api/v1/authorize', '/mps/login/api/v1/authorize']
         let authBody: { token?: string; accessToken?: string } | null = null
@@ -190,28 +181,9 @@ export const useAuth = () => {
 
         const systemPath = getSystemPathFromInput(deviceId.trim())
 
-        const systemRes = await fetch(toAbsoluteUrl(baseUrl, systemPath), {
-          headers: {
-            Accept: 'application/json',
-            Authorization: authHeader
-          }
-        })
-        if (!systemRes.ok) {
-          throw new Error(
-            `Failed to read system: ${systemRes.status} ${systemRes.statusText}`
-          )
-        }
-
-        const systemBody = (await systemRes.json()) as RedfishSystem
-
-        const actionTarget =
-          systemBody.Actions?.Oem?.[
-            '#IntelComputerSystem.GenerateRedirectionToken'
-          ]?.target
-        const fallbackActionPath = `${systemPath.replace(/\/+$/, '')}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken`
-        const actionUrl = toAbsoluteUrl(baseUrl, actionTarget ?? fallbackActionPath)
-
-        const tokenRes = await fetch(actionUrl, {
+        // Try well-known action paths directly (no discovery GET, same as REST API flow)
+        const actionPath = `${systemPath.replace(/\/+$/, '')}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken`
+        const tokenRes = await fetch(toAbsoluteUrl(baseUrl, actionPath), {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -231,15 +203,14 @@ export const useAuth = () => {
           RedirectionToken?: string
           Token?: string
         }
-        const token =
-          tokenBody.token ?? tokenBody.RedirectionToken ?? tokenBody.Token
+        const token = tokenBody.token ?? tokenBody.RedirectionToken ?? tokenBody.Token
         if (!token) {
           throw new Error('No redirection token returned by action')
         }
 
         setState({
           token,
-          deviceId: systemBody.Id ?? parseSystemIdFromPath(systemPath),
+          deviceId: parseSystemIdFromPath(systemPath),
           isAuthenticated: true,
           isLoading: false,
           error: ''

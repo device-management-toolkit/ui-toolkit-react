@@ -11,7 +11,7 @@ import {
 } from '@device-management-toolkit/ui-toolkit-react'
 import { useAuth, type ApiMode } from './useAuth'
 
-const envApiMode = import.meta.env.VITE_API_MODE === 'redfish' ? 'redfish' : 'restapi'
+const envApiMode = import.meta.env.VITE_API_MODE === 'redfish' ? 'redfish' : 'rest'
 
 type TabType = 'kvm' | 'sol' | 'ider'
 
@@ -34,25 +34,14 @@ const App: React.FC = () => {
 
   const auth = useAuth()
 
-  const getRelayServer = (baseUrl: string, mode: ApiMode): string => {
+  const getRelayServer = (baseUrl: string): string => {
     const normalized = baseUrl.replace(/\/+$/, '')
-
-    if (mode === 'restapi') {
-      if (normalized.startsWith('https://')) {
-        return `${normalized}/mps/ws/relay`
-      }
-      if (normalized.startsWith('http://')) {
-        return `${normalized}/relay`
-      }
-      return normalized
-    }
-
     if (normalized.startsWith('https://') || normalized.startsWith('http://')) {
       return `${normalized}/relay`
     }
     return normalized
   }
-  const relayServer = getRelayServer(config.mpsServer, apiMode)
+  const relayServer = getRelayServer(config.mpsServer)
 
   const updateConfig = (field: string, value: string) => {
     setConfig((c) => ({ ...c, [field]: value }))
@@ -123,12 +112,12 @@ const App: React.FC = () => {
             disabled={auth.isLoading}
           >
             {auth.isLoading
-              ? apiMode === 'restapi'
+              ? apiMode === 'rest'
                 ? 'Authenticating...'
                 : 'Connecting...'
               : auth.isAuthenticated
                 ? 'Disconnect'
-                : apiMode === 'restapi'
+                : apiMode === 'rest'
                   ? 'Authenticate'
                   : 'Connect'}
           </button>
