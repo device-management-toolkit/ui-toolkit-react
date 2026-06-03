@@ -1,3 +1,5 @@
+## [5.0.5](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.4...v5.0.5) (2026-06-03)
+
 ## [5.0.4](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.3...v5.0.4) (2026-05-20)
 
 ## [5.0.3](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.2...v5.0.3) (2026-04-10)
