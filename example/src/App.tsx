@@ -9,7 +9,9 @@ import {
   Sol,
   AttachDiskImage
 } from '@device-management-toolkit/ui-toolkit-react'
-import { useAuth } from './useAuth'
+import { useAuth, type ApiMode } from './useAuth'
+
+const envApiMode = import.meta.env.VITE_API_MODE === 'redfish' ? 'redfish' : 'rest'
 
 type TabType = 'kvm' | 'sol' | 'ider'
 
@@ -21,6 +23,7 @@ const TABS: { id: TabType; label: string }[] = [
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('kvm')
+  const apiMode: ApiMode = envApiMode
   const [config, setConfig] = useState({
     mpsServer: '',
     deviceId: '',
@@ -30,14 +33,13 @@ const App: React.FC = () => {
   })
 
   const auth = useAuth()
+
   const getRelayServer = (baseUrl: string): string => {
-    if (baseUrl.startsWith('https://')) {
-      return `${baseUrl}/mps/ws/relay`
+    const normalized = baseUrl.replace(/\/+$/, '')
+    if (normalized.startsWith('https://') || normalized.startsWith('http://')) {
+      return `${normalized}/relay`
     }
-    if (baseUrl.startsWith('http://')) {
-      return `${baseUrl}/relay`
-    }
-    return baseUrl
+    return normalized
   }
   const relayServer = getRelayServer(config.mpsServer)
 
@@ -46,7 +48,7 @@ const App: React.FC = () => {
   }
 
   const componentProps = {
-    deviceId: config.deviceId,
+    deviceId: apiMode === 'redfish' ? auth.deviceId || config.deviceId : config.deviceId,
     mpsServer: relayServer,
     authToken: auth.token
   }
@@ -59,28 +61,42 @@ const App: React.FC = () => {
       </div>
 
       <div className='config-panel'>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '12px'
+          }}
+        >
+          <span style={{ fontWeight: 600 }}>API Mode:</span>
+          <span style={{ padding: '6px 10px' }}>
+            {apiMode === 'redfish' ? 'Redfish API' : 'Console REST API'}
+          </span>
+        </div>
+
         <div className='config-grid'>
           <input
-            placeholder='/mps/login or /api/v1/authorize'
+            placeholder='http(s)://<host[:port]>'
             value={config.mpsServer}
             onChange={(e) => updateConfig('mpsServer', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='Device GUID'
+            placeholder='Device ID'
             value={config.deviceId}
             onChange={(e) => updateConfig('deviceId', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
-            placeholder='MPS Username'
+            placeholder='Username'
             value={config.username}
             onChange={(e) => updateConfig('username', e.target.value)}
             disabled={auth.isAuthenticated}
           />
           <input
             type='password'
-            placeholder='MPS Password'
+            placeholder='Password'
             value={config.password}
             onChange={(e) => updateConfig('password', e.target.value)}
             disabled={auth.isAuthenticated}
@@ -91,15 +107,19 @@ const App: React.FC = () => {
           <button
             className={auth.isAuthenticated ? 'btn-danger' : 'btn-success'}
             onClick={() =>
-              auth.isAuthenticated ? auth.disconnect() : auth.connect(config)
+              auth.isAuthenticated ? auth.disconnect() : auth.connect(config, apiMode)
             }
             disabled={auth.isLoading}
           >
             {auth.isLoading
-              ? 'Authenticating...'
+              ? apiMode === 'rest'
+                ? 'Authenticating...'
+                : 'Connecting...'
               : auth.isAuthenticated
                 ? 'Disconnect'
-                : 'Authenticate'}
+                : apiMode === 'rest'
+                  ? 'Authenticate'
+                  : 'Connect'}
           </button>
         </div>
 

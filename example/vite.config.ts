@@ -10,6 +10,14 @@ export default defineConfig({
         __dirname,
         '../src/index.ts'
       ),
+      '@device-management-toolkit/ui-toolkit/core': path.resolve(
+        __dirname,
+        'node_modules/@device-management-toolkit/ui-toolkit/bundles/core.bundle.js'
+      ),
+      '@xterm/xterm': path.resolve(
+        __dirname,
+        'node_modules/@xterm/xterm/lib/xterm.js'
+      ),
       // Dedupe React to prevent multiple instances
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
