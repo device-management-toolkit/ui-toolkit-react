@@ -1,6 +1,6 @@
 {
   "name": "@device-management-toolkit/ui-toolkit-react",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "React UI controls for Intel AMT features",
   "type": "module",
   "main": "dist/index.cjs.js",
@@ -57,7 +57,7 @@
     "intel"
   ],
   "dependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.16",
+    "@device-management-toolkit/ui-toolkit": "^3.3.17",
     "@xterm/xterm": "^6.0.0",
     "i18next": "^26.0.5",
     "react-i18next": "^17.0.3"
