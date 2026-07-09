@@ -16,6 +16,7 @@ permissions:
 
 jobs:
   zizmor:
+    if: always()
     permissions:
       contents: read
       security-events: write
