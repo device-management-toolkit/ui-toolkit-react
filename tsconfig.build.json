@@ -1,7 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node"]
   },
-  "exclude": ["./src/test/**/*", "jest.setup.ts"]
+  "exclude": [
+    "./src/vitest.d.ts",
+    "./src/test/**/*",
+    "./src/**/*.test.ts",
+    "./src/**/*.test.tsx",
+    "./src/mocks/**/*",
+    "vitest.setup.ts",
+    "vitest.config.ts"
+  ]
 }

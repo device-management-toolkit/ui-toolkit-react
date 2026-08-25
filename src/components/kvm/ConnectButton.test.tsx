@@ -16,11 +16,11 @@ import { ConnectButton } from './ConnectButton'
 
 describe('ConnectButton', () => {
   // Mock function to track when the connect/disconnect action is triggered
-  const mockHandleConnectClick = jest.fn()
+  const mockHandleConnectClick = vi.fn()
 
   // Reset all mocks before each test to ensure test isolation
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**

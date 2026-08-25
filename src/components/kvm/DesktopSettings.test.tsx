@@ -15,13 +15,13 @@ import { DesktopSettings } from './DesktopSettings'
 
 describe('DesktopSettings', () => {
   // Mock function to receive settings changes from this component
-  const mockChangeDesktopSettings = jest.fn()
+  const mockChangeDesktopSettings = vi.fn()
   // Mock function that returns the current connection state
-  const mockGetConnectState = jest.fn()
+  const mockGetConnectState = vi.fn()
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetConnectState.mockReturnValue(0) // Start disconnected
   })
 

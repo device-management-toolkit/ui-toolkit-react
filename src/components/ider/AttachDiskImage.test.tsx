@@ -40,7 +40,7 @@ import { AttachDiskImage } from './AttachDiskImage'
  * Prevents actual IDER connection attempts during tests.
  * We're testing the UI behavior, not the connection logic.
  */
-jest.mock('@device-management-toolkit/ui-toolkit/core')
+vi.mock('@device-management-toolkit/ui-toolkit/core')
 
 describe('AttachDiskImage', () => {
   const defaultProps = {
@@ -51,7 +51,7 @@ describe('AttachDiskImage', () => {
 
   // Reset mocks between tests
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**
