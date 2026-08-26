@@ -23,11 +23,11 @@ import { PureCanvas } from './PureCanvas'
 
 describe('PureCanvas', () => {
   // Mock callback to receive the canvas 2D rendering context
-  const mockContextRef = jest.fn()
+  const mockContextRef = vi.fn()
   // Mock handlers for mouse events - these control the remote desktop
-  const mockMouseDown = jest.fn()
-  const mockMouseUp = jest.fn()
-  const mockMouseMove = jest.fn()
+  const mockMouseDown = vi.fn()
+  const mockMouseUp = vi.fn()
+  const mockMouseMove = vi.fn()
 
   const defaultProps = {
     contextRef: mockContextRef,
@@ -40,7 +40,7 @@ describe('PureCanvas', () => {
 
   // Reset all mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**

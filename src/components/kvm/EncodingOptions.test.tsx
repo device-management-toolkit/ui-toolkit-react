@@ -18,13 +18,13 @@ import { EncodingOptions } from './EncodingOptions'
 
 describe('EncodingOptions', () => {
   // Mock function to track encoding changes
-  const mockChangeEncoding = jest.fn()
+  const mockChangeEncoding = vi.fn()
   // Mock function that returns the current connection state
-  const mockGetConnectState = jest.fn()
+  const mockGetConnectState = vi.fn()
 
   // Reset mocks before each test and set default state to disconnected
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetConnectState.mockReturnValue(0) // 0 = disconnected
   })
 

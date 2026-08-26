@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 
+import type { Mock } from 'vitest'
+
 /**
  * Sol Component Tests
  *
@@ -38,7 +40,7 @@ import { AMTRedirector } from '@device-management-toolkit/ui-toolkit/core'
  * rendering (terminal only shows when connected) without needing
  * a real terminal.
  */
-jest.mock('./Terminal', () => ({
+vi.mock('./Terminal', () => ({
   __esModule: true,
   default: () => <div data-testid='mock-terminal'>Terminal</div>,
   Term: () => <div data-testid='mock-terminal'>Terminal</div>
@@ -56,26 +58,32 @@ jest.mock('./Terminal', () => ({
  * - AMTRedirector: Manages WebSocket connection to MPS
  * - TerminalDataProcessor: Converts data for xterm display
  */
-jest.mock('@device-management-toolkit/ui-toolkit/core', () => ({
+vi.mock('@device-management-toolkit/ui-toolkit/core', () => ({
   Protocol: { SOL: 1, KVM: 2, IDER: 3 },
-  AmtTerminal: jest.fn().mockImplementation(() => ({
-    onSend: null,
-    StateChange: jest.fn(),
-    TermSendKeys: jest.fn()
-  })),
-  AMTRedirector: jest.fn().mockImplementation(() => ({
-    onNewState: null,
-    onStateChanged: null,
-    onProcessData: null,
-    start: jest.fn(),
-    stop: jest.fn(),
-    send: jest.fn()
-  })),
-  TerminalDataProcessor: jest.fn().mockImplementation(() => ({
-    processDataToXterm: null,
-    clearTerminal: null,
-    processData: jest.fn()
-  }))
+  AmtTerminal: vi.fn().mockImplementation(function () {
+    return {
+      onSend: null,
+      StateChange: vi.fn(),
+      TermSendKeys: vi.fn()
+    }
+  }),
+  AMTRedirector: vi.fn().mockImplementation(function () {
+    return {
+      onNewState: null,
+      onStateChanged: null,
+      onProcessData: null,
+      start: vi.fn(),
+      stop: vi.fn(),
+      send: vi.fn()
+    }
+  }),
+  TerminalDataProcessor: vi.fn().mockImplementation(function () {
+    return {
+      processDataToXterm: null,
+      clearTerminal: null,
+      processData: vi.fn()
+    }
+  })
 }))
 
 /**
@@ -85,16 +93,18 @@ jest.mock('@device-management-toolkit/ui-toolkit/core', () => ({
  * We mock it to avoid jsdom limitations and focus on testing
  * the React integration.
  */
-jest.mock('@xterm/xterm', () => ({
-  Terminal: jest.fn().mockImplementation(() => ({
-    open: jest.fn(),
-    write: jest.fn(),
-    reset: jest.fn(),
-    dispose: jest.fn(),
-    onKey: jest.fn(),
-    hasSelection: jest.fn().mockReturnValue(false),
-    getSelection: jest.fn().mockReturnValue('')
-  }))
+vi.mock('@xterm/xterm', () => ({
+  Terminal: vi.fn().mockImplementation(function () {
+    return {
+      open: vi.fn(),
+      write: vi.fn(),
+      reset: vi.fn(),
+      dispose: vi.fn(),
+      onKey: vi.fn(),
+      hasSelection: vi.fn().mockReturnValue(false),
+      getSelection: vi.fn().mockReturnValue('')
+    }
+  })
 }))
 
 describe('Sol', () => {
@@ -106,7 +116,7 @@ describe('Sol', () => {
 
   // Reset all mocks between tests
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**
@@ -186,7 +196,9 @@ describe('Sol', () => {
     const customStyle = { backgroundColor: 'purple' }
     render(<Sol {...defaultProps} buttonStyle={customStyle} />)
 
-    expect(screen.getByRole('button')).toHaveStyle('background-color: rgb(128, 0, 128)')
+    expect(screen.getByRole('button')).toHaveStyle(
+      'background-color: rgb(128, 0, 128)'
+    )
   })
 
   /**
@@ -275,7 +287,7 @@ describe('Sol', () => {
   it('should show disconnect button and terminal when connected', () => {
     render(<Sol {...defaultProps} />)
 
-    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+    const mockRedirector = (AMTRedirector as Mock).mock.results[0].value
 
     act(() => {
       mockRedirector.onStateChanged(mockRedirector, 3)
@@ -294,7 +306,7 @@ describe('Sol', () => {
   it('should stop SOL when clicking disconnect', () => {
     render(<Sol {...defaultProps} />)
 
-    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+    const mockRedirector = (AMTRedirector as Mock).mock.results[0].value
 
     // Simulate connected state
     act(() => {
@@ -316,7 +328,7 @@ describe('Sol', () => {
   it('should start SOL when clicking connect', () => {
     render(<Sol {...defaultProps} />)
 
-    const mockRedirector = (AMTRedirector as jest.Mock).mock.results[0].value
+    const mockRedirector = (AMTRedirector as Mock).mock.results[0].value
 
     fireEvent.click(screen.getByText('sol.connect'))
 

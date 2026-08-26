@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 
+import type { Mock } from 'vitest'
+
 /**
  * IDER Component Tests
  *
@@ -36,11 +38,35 @@ import {
  * Mocking them allows us to test the React component's lifecycle
  * management without real network connections.
  */
-jest.mock('@device-management-toolkit/ui-toolkit/core')
+vi.mock('@device-management-toolkit/ui-toolkit/core')
+
+/**
+ * Shapes of the automocked instances the IDER component mutates.
+ *
+ * Vitest types `mock.instances` as `unknown[]` (Jest's `mock.results[0].value`
+ * was `any`), so the instances are narrowed explicitly here.
+ */
+interface MockIderInstance {
+  sectorStats: (
+    mode: number,
+    dev: number,
+    total: number,
+    start: number,
+    len: number
+  ) => void
+  floppyRead: number
+  floppyWrite: number
+  cdromRead: number
+  cdromWrite: number
+}
+
+interface MockRedirectorInstance {
+  onStateChanged: ((redirector: unknown, state: number) => void) | null
+}
 
 describe('IDER', () => {
   // Mock callback for updating IDER connection state in parent component
-  const mockUpdateIderState = jest.fn()
+  const mockUpdateIderState = vi.fn()
 
   const defaultProps = {
     iderState: 0, // 0=stopped, 1=starting, 2=connected
@@ -55,7 +81,7 @@ describe('IDER', () => {
 
   // Reset mocks between tests
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**
@@ -286,11 +312,18 @@ describe('IDER', () => {
     rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
 
     // Get the AMTIDER instance created during startIder
-    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
-    if (iderInstance?.sectorStats) {
-      iderInstance.sectorStats(1, 0, 100, 0, 10) // mode=read, dev=floppy
-      expect(iderInstance.floppyRead).toBe(10 * 512)
-    }
+    const iderInstance = (AMTIDER as unknown as Mock).mock
+      .instances[0] as MockIderInstance
+    expect(iderInstance).toBeDefined()
+    expect(iderInstance.sectorStats).toBeInstanceOf(Function)
+    // The automocked constructor does not run the class field
+    // initialisers, so seed the counters the component increments.
+    iderInstance.floppyRead = 0
+    iderInstance.floppyWrite = 0
+    iderInstance.cdromRead = 0
+    iderInstance.cdromWrite = 0
+    iderInstance.sectorStats(1, 0, 100, 0, 10) // mode=read, dev=floppy
+    expect(iderInstance.floppyRead).toBe(10 * 512)
   })
 
   /**
@@ -309,11 +342,18 @@ describe('IDER', () => {
 
     rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
 
-    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
-    if (iderInstance?.sectorStats) {
-      iderInstance.sectorStats(1, 1, 100, 0, 5) // mode=read, dev=cdrom
-      expect(iderInstance.cdromRead).toBe(5 * 2048)
-    }
+    const iderInstance = (AMTIDER as unknown as Mock).mock
+      .instances[0] as MockIderInstance
+    expect(iderInstance).toBeDefined()
+    expect(iderInstance.sectorStats).toBeInstanceOf(Function)
+    // The automocked constructor does not run the class field
+    // initialisers, so seed the counters the component increments.
+    iderInstance.floppyRead = 0
+    iderInstance.floppyWrite = 0
+    iderInstance.cdromRead = 0
+    iderInstance.cdromWrite = 0
+    iderInstance.sectorStats(1, 1, 100, 0, 5) // mode=read, dev=cdrom
+    expect(iderInstance.cdromRead).toBe(5 * 2048)
   })
 
   /**
@@ -329,11 +369,18 @@ describe('IDER', () => {
 
     rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
 
-    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
-    if (iderInstance?.sectorStats) {
-      iderInstance.sectorStats(0, 0, 100, 0, 8) // mode=write, dev=floppy
-      expect(iderInstance.floppyWrite).toBe(8 * 512)
-    }
+    const iderInstance = (AMTIDER as unknown as Mock).mock
+      .instances[0] as MockIderInstance
+    expect(iderInstance).toBeDefined()
+    expect(iderInstance.sectorStats).toBeInstanceOf(Function)
+    // The automocked constructor does not run the class field
+    // initialisers, so seed the counters the component increments.
+    iderInstance.floppyRead = 0
+    iderInstance.floppyWrite = 0
+    iderInstance.cdromRead = 0
+    iderInstance.cdromWrite = 0
+    iderInstance.sectorStats(0, 0, 100, 0, 8) // mode=write, dev=floppy
+    expect(iderInstance.floppyWrite).toBe(8 * 512)
   })
 
   /**
@@ -349,11 +396,18 @@ describe('IDER', () => {
 
     rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
 
-    const iderInstance = (AMTIDER as unknown as jest.Mock).mock.results[0]?.value
-    if (iderInstance?.sectorStats) {
-      iderInstance.sectorStats(0, 1, 100, 0, 3) // mode=write, dev=cdrom
-      expect(iderInstance.cdromWrite).toBe(3 * 2048)
-    }
+    const iderInstance = (AMTIDER as unknown as Mock).mock
+      .instances[0] as MockIderInstance
+    expect(iderInstance).toBeDefined()
+    expect(iderInstance.sectorStats).toBeInstanceOf(Function)
+    // The automocked constructor does not run the class field
+    // initialisers, so seed the counters the component increments.
+    iderInstance.floppyRead = 0
+    iderInstance.floppyWrite = 0
+    iderInstance.cdromRead = 0
+    iderInstance.cdromWrite = 0
+    iderInstance.sectorStats(0, 1, 100, 0, 3) // mode=write, dev=cdrom
+    expect(iderInstance.cdromWrite).toBe(3 * 2048)
   })
 
   /**
@@ -373,13 +427,14 @@ describe('IDER', () => {
     rerender(<IDER {...defaultProps} cdrom={mockFile} iderState={1} />)
 
     // Get the redirector instance
-    const redirectorInstance = (AMTRedirector as unknown as jest.Mock).mock
-      .results[0]?.value
-    if (redirectorInstance?.onStateChanged) {
-      // Should not throw when invoked
-      expect(() => {
-        redirectorInstance.onStateChanged(redirectorInstance, 2)
-      }).not.toThrow()
-    }
+    const redirectorInstance = (AMTRedirector as unknown as Mock).mock
+      .instances[0] as MockRedirectorInstance
+    expect(redirectorInstance).toBeDefined()
+    // ider.tsx assigns onConnectionStateChange to the redirector on start.
+    expect(redirectorInstance.onStateChanged).toBeInstanceOf(Function)
+    // Should not throw when invoked
+    expect(() => {
+      redirectorInstance.onStateChanged?.(redirectorInstance, 2)
+    }).not.toThrow()
   })
 })

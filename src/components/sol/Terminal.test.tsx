@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 
+import type { Mock } from 'vitest'
+
 /**
  * Terminal Component Tests
  *
@@ -26,13 +28,13 @@ import { Terminal } from '@xterm/xterm'
 
 describe('Term', () => {
   // Mock callback for handling keyboard input - sends keys to remote device
-  const mockHandleKeyPress = jest.fn()
+  const mockHandleKeyPress = vi.fn()
   // Mock xterm.js instance - this would be a real Terminal in production
   let mockXterm: Terminal
 
   // Create fresh mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockXterm = new Terminal()
   })
 
@@ -196,7 +198,7 @@ describe('Term', () => {
     )
 
     // Clear the mock to check if it's called again
-    ;(mockXterm.open as jest.Mock).mockClear()
+    ;(mockXterm.open as Mock).mockClear()
 
     rerender(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
@@ -211,15 +213,15 @@ describe('Term', () => {
    * it should copy the selection to clipboard (not send interrupt).
    */
   it('should handle Ctrl+C with selection (copy to clipboard)', () => {
-    ;(mockXterm.hasSelection as jest.Mock).mockReturnValue(true)
-    ;(mockXterm.getSelection as jest.Mock).mockReturnValue('selected text')
+    ;(mockXterm.hasSelection as Mock).mockReturnValue(true)
+    ;(mockXterm.getSelection as Mock).mockReturnValue('selected text')
 
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'c',
-      domEvent: { ctrlKey: true, key: 'c', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: true, key: 'c', preventDefault: vi.fn() }
     })
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('selected text')
@@ -233,14 +235,14 @@ describe('Term', () => {
    * should send the interrupt character (0x03) to the remote device.
    */
   it('should handle Ctrl+C without selection (send interrupt)', () => {
-    ;(mockXterm.hasSelection as jest.Mock).mockReturnValue(false)
+    ;(mockXterm.hasSelection as Mock).mockReturnValue(false)
 
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'c',
-      domEvent: { ctrlKey: true, key: 'c', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: true, key: 'c', preventDefault: vi.fn() }
     })
 
     expect(mockHandleKeyPress).toHaveBeenCalledWith('\x03')
@@ -253,16 +255,14 @@ describe('Term', () => {
    * it to the remote device as keyboard input.
    */
   it('should handle Ctrl+V (paste from clipboard)', () => {
-    ;(navigator.clipboard.readText as jest.Mock).mockResolvedValue(
-      'pasted text'
-    )
+    ;(navigator.clipboard.readText as Mock).mockResolvedValue('pasted text')
 
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'v',
-      domEvent: { ctrlKey: true, key: 'v', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: true, key: 'v', preventDefault: vi.fn() }
     })
 
     expect(navigator.clipboard.readText).toHaveBeenCalled()
@@ -277,10 +277,10 @@ describe('Term', () => {
   it('should handle Backspace key', () => {
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: '\x7f',
-      domEvent: { ctrlKey: false, key: 'Backspace', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: false, key: 'Backspace', preventDefault: vi.fn() }
     })
 
     expect(mockHandleKeyPress).toHaveBeenCalledWith('\b \b')
@@ -295,10 +295,10 @@ describe('Term', () => {
   it('should handle regular key press', () => {
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'a',
-      domEvent: { ctrlKey: false, key: 'a', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: false, key: 'a', preventDefault: vi.fn() }
     })
 
     expect(mockHandleKeyPress).toHaveBeenCalledWith('a')
@@ -310,19 +310,19 @@ describe('Term', () => {
    * If clipboard.writeText fails, it should not crash the terminal.
    */
   it('should handle clipboard write failure', async () => {
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation()
-    ;(mockXterm.hasSelection as jest.Mock).mockReturnValue(true)
-    ;(mockXterm.getSelection as jest.Mock).mockReturnValue('text')
-    ;(navigator.clipboard.writeText as jest.Mock).mockRejectedValue(
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    ;(mockXterm.hasSelection as Mock).mockReturnValue(true)
+    ;(mockXterm.getSelection as Mock).mockReturnValue('text')
+    ;(navigator.clipboard.writeText as Mock).mockRejectedValue(
       new Error('denied')
     )
 
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'c',
-      domEvent: { ctrlKey: true, key: 'c', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: true, key: 'c', preventDefault: vi.fn() }
     })
 
     // Flush microtask queue so the .catch() handler runs while spy is active
@@ -341,17 +341,17 @@ describe('Term', () => {
    * If clipboard.readText fails, it should not crash the terminal.
    */
   it('should handle clipboard read failure', async () => {
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation()
-    ;(navigator.clipboard.readText as jest.Mock).mockRejectedValue(
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    ;(navigator.clipboard.readText as Mock).mockRejectedValue(
       new Error('denied')
     )
 
     render(<Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />)
 
-    const onKeyCallback = (mockXterm.onKey as jest.Mock).mock.calls[0][0]
+    const onKeyCallback = (mockXterm.onKey as Mock).mock.calls[0][0]
     onKeyCallback({
       key: 'v',
-      domEvent: { ctrlKey: true, key: 'v', preventDefault: jest.fn() }
+      domEvent: { ctrlKey: true, key: 'v', preventDefault: vi.fn() }
     })
 
     // Flush microtask queue so the .catch() handler runs while spy is active
@@ -373,7 +373,7 @@ describe('Term', () => {
    * callback without re-registering the xterm handler.
    */
   it('should update handleKeyPressRef when handleKeyPress changes', () => {
-    const newHandleKeyPress = jest.fn()
+    const newHandleKeyPress = vi.fn()
 
     const { rerender, container } = render(
       <Term handleKeyPress={mockHandleKeyPress} xterm={mockXterm} />

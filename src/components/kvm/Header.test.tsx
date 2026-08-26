@@ -18,11 +18,11 @@ import { Header } from './Header'
 
 describe('Header', () => {
   // Mock callback for when connect/disconnect button is clicked
-  const mockHandleConnectClick = jest.fn()
+  const mockHandleConnectClick = vi.fn()
   // Mock callback for when desktop settings (encoding) change
-  const mockChangeDesktopSettings = jest.fn()
+  const mockChangeDesktopSettings = vi.fn()
   // Mock function that returns the current connection state
-  const mockGetConnectState = jest.fn()
+  const mockGetConnectState = vi.fn()
 
   const defaultProps = {
     kvmstate: 0,
@@ -33,7 +33,7 @@ describe('Header', () => {
 
   // Reset mocks before each test
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockGetConnectState.mockReturnValue(0)
   })
 

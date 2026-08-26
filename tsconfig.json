@@ -3,6 +3,7 @@
     "target": "ES2015",
     "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["node"],
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",

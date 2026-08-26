@@ -18,7 +18,6 @@
  * to test the UI component's rendering logic in isolation.
  */
 
-import { useEffect } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { KVM } from './UI'
 import {
@@ -34,7 +33,7 @@ import {
  * logic (Header only shows when autoConnect=true) without dealing with
  * the Header's internal complexity.
  */
-jest.mock('./Header', () => ({
+vi.mock('./Header', () => ({
   Header: ({ handleConnectClick, kvmstate }: any) => (
     <div data-testid='mock-header'>
       <button onClick={handleConnectClick}>
@@ -52,20 +51,25 @@ jest.mock('./Header', () => ({
  * that KVM properly initializes and passes the contextRef callback
  * without needing a real canvas.
  */
-jest.mock('./PureCanvas', () => ({
-  PureCanvas: ({ contextRef }: any) => {
-    useEffect(() => {
-      // Simulate context ref callback with a mock context
-      // This mimics what happens when the real canvas mounts
-      const mockCtx = {
-        clearRect: jest.fn(),
-        canvas: { height: 768, width: 1366 }
-      }
-      contextRef(mockCtx)
-    }, [contextRef])
-    return <canvas data-testid='mock-canvas' />
+vi.mock('./PureCanvas', async () => {
+  // `vi.mock` is hoisted above the import statements, so the factory must not
+  // close over top-level bindings -- import React inside the factory instead.
+  const { useEffect } = await import('react')
+  return {
+    PureCanvas: ({ contextRef }: any) => {
+      useEffect(() => {
+        // Simulate context ref callback with a mock context
+        // This mimics what happens when the real canvas mounts
+        const mockCtx = {
+          clearRect: vi.fn(),
+          canvas: { height: 768, width: 1366 }
+        }
+        contextRef(mockCtx)
+      }, [contextRef])
+      return <canvas data-testid='mock-canvas' />
+    }
   }
-}))
+})
 
 describe('KVM', () => {
   const defaultProps = {
@@ -79,7 +83,7 @@ describe('KVM', () => {
 
   // Reset all mocks between tests
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   /**
@@ -233,8 +237,8 @@ describe('KVM', () => {
    * the KVM WebSocket connection should be started.
    */
   it('should start KVM when clicking Connect', () => {
-    const startSpy = jest.spyOn(AMTKvmDataRedirector.prototype, 'start')
-    const grabSpy = jest.spyOn(KeyBoardHelper.prototype, 'GrabKeyInput')
+    const startSpy = vi.spyOn(AMTKvmDataRedirector.prototype, 'start')
+    const grabSpy = vi.spyOn(KeyBoardHelper.prototype, 'GrabKeyInput')
 
     render(<KVM {...defaultProps} autoConnect={true} />)
 
@@ -254,7 +258,7 @@ describe('KVM', () => {
    * the current KVM connection and reinitialize for the new device.
    */
   it('should stop KVM when deviceId changes', () => {
-    const stopSpy = jest.spyOn(AMTKvmDataRedirector.prototype, 'stop')
+    const stopSpy = vi.spyOn(AMTKvmDataRedirector.prototype, 'stop')
 
     const { rerender } = render(<KVM {...defaultProps} />)
 
