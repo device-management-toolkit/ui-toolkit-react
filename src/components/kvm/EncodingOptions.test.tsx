@@ -177,6 +177,6 @@ describe('EncodingOptions', () => {
       />
     )
 
-    expect(screen.getByRole('combobox')).toHaveStyle('border: 2px solid red')
+    expect(screen.getByRole('combobox').style.border).toBe('2px solid red')
   })
 })

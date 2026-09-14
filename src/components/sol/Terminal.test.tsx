@@ -149,7 +149,7 @@ describe('Term', () => {
     )
 
     const xtermDiv = container.firstChild?.firstChild as HTMLElement
-    expect(xtermDiv).toHaveStyle('border: 1px solid blue')
+    expect(xtermDiv.style.border).toBe('1px solid blue')
   })
 
   /**
