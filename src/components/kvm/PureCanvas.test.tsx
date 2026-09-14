@@ -166,8 +166,8 @@ describe('PureCanvas', () => {
     const customStyle = { border: '2px solid red' }
     render(<PureCanvas {...defaultProps} style={customStyle} />)
 
-    expect(screen.getByTestId('pure-canvas-testid')).toHaveStyle(
-      'border: 2px solid red'
+    expect(screen.getByTestId('pure-canvas-testid').style.border).toBe(
+      '2px solid red'
     )
   })
 

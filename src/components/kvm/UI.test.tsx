@@ -186,7 +186,7 @@ describe('KVM', () => {
       <KVM {...defaultProps} containerStyle={{ height: '100vh' }} />
     )
 
-    expect(container.firstChild).toHaveStyle('height: 100vh')
+    expect((container.firstChild as HTMLElement).style.height).toBe('100vh')
   })
 
   /**

@@ -87,7 +87,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^17.0.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.1",
     "prettier": "^3.5.3",
     "prettier-config-standard": "^7.0.0",
     "prettier-plugin-multiline-arrays": "^4.1.3",
