@@ -48,6 +48,8 @@ npm run dev
 
 ## Development
 
+To build this repository and run its tests, use Node.js 24.15.0 or a newer 24.x release.
+
 To build and develop the library locally:
 
 ```bash
