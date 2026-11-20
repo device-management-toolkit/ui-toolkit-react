@@ -379,10 +379,14 @@ describe('Sol', () => {
     const processor = (TerminalDataProcessor as Mock).mock.results[0].value
 
     act(() => {
+      redirector.onStateChanged(redirector, 1)
+    })
+    expect(processor.reset).not.toHaveBeenCalled()
+
+    act(() => {
       redirector.onStateChanged(redirector, 0)
     })
-
-    expect(processor.reset).toHaveBeenCalled()
+    expect(processor.reset).toHaveBeenCalledTimes(1)
   })
 
   /**

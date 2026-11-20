@@ -158,6 +158,7 @@ export const Sol: React.FC<SOLProps> = ({
     terminalRef.current = new AmtTerminal()
     redirectorRef.current = new AMTRedirector(config)
     dataProcessorRef.current = new TerminalDataProcessor(terminalRef.current)
+    dataProcessorRef.current.setTerminalType(terminalType)
 
     // Bind callbacks between components
     terminalRef.current.onSend = redirectorRef.current.send.bind(
@@ -203,10 +204,10 @@ export const Sol: React.FC<SOLProps> = ({
     cleanUp
   ])
 
-  // Connection changes recreate the processor, so reapply the selected mode.
+  // Keep the processor in sync when the selected mode changes.
   useEffect(() => {
     dataProcessorRef.current?.setTerminalType(terminalType)
-  }, [terminalType, deviceId, mpsServer, authToken])
+  }, [terminalType])
 
   // Starts the SOL WebSocket connection
   const startSOL = useCallback((): void => {
