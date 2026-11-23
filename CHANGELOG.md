@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.10...v5.1.0) (2026-11-20)
+
+
+### Features
+
+* **sol:** support configurable terminal type ([#2314](https://github.com/device-management-toolkit/ui-toolkit-react/issues/2314)) ([46b9b3e](https://github.com/device-management-toolkit/ui-toolkit-react/commit/46b9b3e1ef07aca7ecb24e3bcb6f198615f44ac2))
+
 ## [5.0.10](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.9...v5.0.10) (2026-10-23)
 
 ## [5.0.9](https://github.com/device-management-toolkit/ui-toolkit-react/compare/v5.0.8...v5.0.9) (2026-09-21)

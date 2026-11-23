@@ -30,7 +30,12 @@ import type { Mock } from 'vitest'
 
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { Sol } from './Sol'
-import { AMTRedirector } from '@device-management-toolkit/ui-toolkit/core'
+import { SolTerminalType as ExportedSolTerminalType } from './index'
+import {
+  AMTRedirector,
+  SolTerminalType,
+  TerminalDataProcessor
+} from '@device-management-toolkit/ui-toolkit/core'
 
 /**
  * Mock the Terminal component
@@ -60,6 +65,7 @@ vi.mock('./Terminal', () => ({
  */
 vi.mock('@device-management-toolkit/ui-toolkit/core', () => ({
   Protocol: { SOL: 1, KVM: 2, IDER: 3 },
+  SolTerminalType: { VTUTF8: 1, PCANSI: 2 },
   AmtTerminal: vi.fn().mockImplementation(function () {
     return {
       onSend: null,
@@ -81,7 +87,9 @@ vi.mock('@device-management-toolkit/ui-toolkit/core', () => ({
     return {
       processDataToXterm: null,
       clearTerminal: null,
-      processData: vi.fn()
+      processData: vi.fn(),
+      setTerminalType: vi.fn(),
+      reset: vi.fn()
     }
   })
 }))
@@ -117,6 +125,49 @@ describe('Sol', () => {
   // Reset all mocks between tests
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('exports SolTerminalType from the SOL entry point', () => {
+    expect(ExportedSolTerminalType).toBe(SolTerminalType)
+  })
+
+  it('synchronizes the terminal type without reconnecting and initializes replacement processors', () => {
+    const { rerender, unmount } = render(<Sol {...defaultProps} />)
+    const processor = (TerminalDataProcessor as Mock).mock.results[0].value
+    expect(processor.setTerminalType).toHaveBeenCalledWith(
+      SolTerminalType.PCANSI
+    )
+
+    rerender(<Sol {...defaultProps} terminalType={SolTerminalType.VTUTF8} />)
+    expect(processor.setTerminalType).toHaveBeenLastCalledWith(
+      SolTerminalType.VTUTF8
+    )
+    expect(TerminalDataProcessor).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <Sol
+        {...defaultProps}
+        deviceId='another-device'
+        terminalType={SolTerminalType.VTUTF8}
+      />
+    )
+    const replacement = (TerminalDataProcessor as Mock).mock.results[1].value
+    expect(processor.reset).toHaveBeenCalled()
+    expect(replacement.setTerminalType).toHaveBeenCalledWith(
+      SolTerminalType.VTUTF8
+    )
+
+    unmount()
+    expect(replacement.reset).toHaveBeenCalled()
+  })
+
+  it('initializes the processor with the supplied terminal type', () => {
+    render(<Sol {...defaultProps} terminalType={SolTerminalType.VTUTF8} />)
+
+    const processor = (TerminalDataProcessor as Mock).mock.results[0].value
+    expect(processor.setTerminalType).toHaveBeenCalledWith(
+      SolTerminalType.VTUTF8
+    )
   })
 
   /**
@@ -317,6 +368,25 @@ describe('Sol', () => {
     fireEvent.click(screen.getByText('sol.disconnect'))
 
     expect(mockRedirector.stop).toHaveBeenCalled()
+    expect(
+      (TerminalDataProcessor as Mock).mock.results[0].value.reset
+    ).toHaveBeenCalled()
+  })
+
+  it('resets the processor when the connection is lost', () => {
+    render(<Sol {...defaultProps} />)
+    const redirector = (AMTRedirector as Mock).mock.results[0].value
+    const processor = (TerminalDataProcessor as Mock).mock.results[0].value
+
+    act(() => {
+      redirector.onStateChanged(redirector, 1)
+    })
+    expect(processor.reset).not.toHaveBeenCalled()
+
+    act(() => {
+      redirector.onStateChanged(redirector, 0)
+    })
+    expect(processor.reset).toHaveBeenCalledTimes(1)
   })
 
   /**

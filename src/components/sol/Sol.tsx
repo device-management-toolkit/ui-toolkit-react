@@ -19,6 +19,7 @@ import {
   AMTRedirector,
   Protocol,
   TerminalDataProcessor,
+  SolTerminalType,
   RedirectorConfig
 } from '@device-management-toolkit/ui-toolkit/core'
 import { Terminal } from '@xterm/xterm'
@@ -51,6 +52,7 @@ export interface SOLProps {
   mpsServer: string | null // MPS server URL
   autoConnect?: boolean // Auto-connect on mount (currently unused)
   authToken: string // Authentication token for MPS server
+  terminalType?: SolTerminalType // SOL terminal emulation: VTUTF8 or PCANSI (defaults to PCANSI)
   containerClassName?: string // Custom CSS class for container
   containerStyle?: React.CSSProperties // Custom inline styles for container
   buttonClassName?: string // Custom CSS class for button
@@ -66,6 +68,7 @@ export const Sol: React.FC<SOLProps> = ({
   mpsServer,
   autoConnect: _autoConnect,
   authToken,
+  terminalType = SolTerminalType.PCANSI,
   containerClassName,
   containerStyle,
   buttonClassName,
@@ -112,6 +115,9 @@ export const Sol: React.FC<SOLProps> = ({
     (_redirector: AMTRedirector, state: number): void => {
       const stateNames = ['disconnected', 'connecting', 'connected', 'ready']
       logger.log('SOL connection state changed:', stateNames[state] ?? state)
+      if (state === 0) {
+        dataProcessorRef.current?.reset()
+      }
       setSOLstate(state)
     },
     []
@@ -152,6 +158,7 @@ export const Sol: React.FC<SOLProps> = ({
     terminalRef.current = new AmtTerminal()
     redirectorRef.current = new AMTRedirector(config)
     dataProcessorRef.current = new TerminalDataProcessor(terminalRef.current)
+    dataProcessorRef.current.setTerminalType(terminalType)
 
     // Bind callbacks between components
     terminalRef.current.onSend = redirectorRef.current.send.bind(
@@ -182,6 +189,7 @@ export const Sol: React.FC<SOLProps> = ({
       if (redirectorRef.current !== null) {
         redirectorRef.current.stop()
       }
+      dataProcessorRef.current?.reset()
       termRef.current?.dispose()
       setXterm(null)
       cleanUp()
@@ -195,6 +203,11 @@ export const Sol: React.FC<SOLProps> = ({
     handleClearTerminal,
     cleanUp
   ])
+
+  // Keep the processor in sync when the selected mode changes.
+  useEffect(() => {
+    dataProcessorRef.current?.setTerminalType(terminalType)
+  }, [terminalType])
 
   // Starts the SOL WebSocket connection
   const startSOL = useCallback((): void => {
@@ -210,6 +223,7 @@ export const Sol: React.FC<SOLProps> = ({
     if (redirectorRef.current !== null) {
       redirectorRef.current.stop()
     }
+    dataProcessorRef.current?.reset()
     handleClearTerminal()
     setSOLstate(0)
   }, [handleClearTerminal])

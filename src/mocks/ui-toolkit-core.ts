@@ -11,6 +11,11 @@ export const Protocol = {
   IDER: 3
 }
 
+export enum SolTerminalType {
+  VTUTF8 = 1,
+  PCANSI = 2
+}
+
 export class AmtTerminal {
   onSend: ((data: string) => void) | null = null
 
@@ -55,6 +60,8 @@ export class TerminalDataProcessor {
   constructor(public terminal: AmtTerminal) {}
 
   processData(data: string): void {}
+  setTerminalType(type: SolTerminalType): void {}
+  reset(): void {}
 }
 
 export class AMTDesktop {
